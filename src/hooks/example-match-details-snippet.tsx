@@ -1,6 +1,6 @@
 import React from 'react';
 import { ActivityIndicator, Text, View } from 'react-native';
-import { useMatchDetails } from '@/hooks/useMatchDetails';
+import { useMatchDetails } from '@/src/hooks/useMatchDetails';
 
 export function MatchDetailsExample({ matchId }: { matchId: number }) {
   const { data, loading, error } = useMatchDetails(matchId);

@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, Pressable, ActivityIndicator } from 'react-native';
-import { useTodayMatches } from '@/hooks/useTodayMatches';
+import { useTodayMatches } from '@/src/hooks/useTodayMatches';
 
 export function HomeMatchesExample() {
   const { data, loading, error, refetch } = useTodayMatches();

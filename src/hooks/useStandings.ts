@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
-import { getStandings } from '@/lib/api/football';
-import type { StandingRow } from '@/lib/api/types';
+import { getStandings } from '@/src/lib/api/football';
+import type { StandingRow } from '@/src/lib/api/types';
 
 export function useStandings(leagueId?: number) {
   const [data, setData] = useState<StandingRow[]>([]);

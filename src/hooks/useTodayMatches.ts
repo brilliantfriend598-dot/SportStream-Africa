@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
-import { getTodayMatches } from '@/lib/api/football';
-import type { MatchItem } from '@/lib/api/types';
+import { getTodayMatches } from '@/src/lib/api/football';
+import type { MatchItem } from '@/src/lib/api/types';
 
 export function useTodayMatches(date?: string) {
   const [data, setData] = useState<MatchItem[]>([]);

@@ -2,10 +2,21 @@ import { Pressable, Text, View } from 'react-native';
 import { router } from 'expo-router';
 import { theme } from '@/constants/theme';
 import { BadgePill } from '@/components/BadgePill';
-import type { Match } from '@/data/mockData';
+
+type MatchData = {
+  id: string | number;
+  league: string;
+  home: string;
+  away: string;
+  time: string;
+  status: 'LIVE' | 'UPCOMING' | 'FT' | string;
+  score: string;
+  events?: string[];
+  stats?: { label: string; value: string }[];
+};
 
 type Props = {
-  match: Match;
+  match: MatchData;
 };
 
 export function MatchCard({ match }: Props) {
@@ -18,6 +29,12 @@ export function MatchCard({ match }: Props) {
       style={{
         backgroundColor: theme.colors.panel,
         borderColor: theme.colors.border,
+        borderWidth: 1,
+        borderRadius: theme.radius.xl,
+        padding: 16,
+        marginBottom: 12,
+      }}
+    >
         borderWidth: 1,
         borderRadius: theme.radius.xl,
         padding: 16,

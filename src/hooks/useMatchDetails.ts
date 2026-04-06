@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
-import { getMatchDetails } from '@/lib/api/football';
-import type { MatchDetails } from '@/lib/api/types';
+import { getMatchDetails } from '@/src/lib/api/football';
+import type { MatchDetails } from '@/src/lib/api/types';
 
 export function useMatchDetails(matchId?: number) {
   const [data, setData] = useState<MatchDetails | null>(null);

@@ -1,6 +1,6 @@
 import { apiGet } from './client';
 import { apiConfig } from './config';
-import { DEFAULT_HOME_LEAGUES } from '@/constants/leagues';
+import { DEFAULT_HOME_LEAGUES } from '@/src/constants/leagues';
 import { mockMatchDetails, mockMatches, mockStandings } from './mock';
 import type { ApiResponse, MatchDetails, MatchEvent, MatchItem, MatchStat, StandingRow } from './types';
 
