@@ -2,6 +2,7 @@
 import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
 import { useMatchDetails } from '@/src/hooks/useMatchDetails';
+import type { MatchEvent, MatchStat } from '@/src/lib/api/types';
 
 export default function MatchDetailsScreen() {
   const params = useLocalSearchParams();
@@ -40,7 +41,7 @@ export default function MatchDetailsScreen() {
 
       <View style={{ gap: 10 }}>
         <Text style={{ color: '#fff', fontSize: 20, fontWeight: '700' }}>Stats</Text>
-        {data.stats.map((item) => (
+        {data.stats.map((item: MatchStat) => (
           <View
             key={item.label}
             style={{
@@ -59,7 +60,7 @@ export default function MatchDetailsScreen() {
 
       <View style={{ gap: 10 }}>
         <Text style={{ color: '#fff', fontSize: 20, fontWeight: '700' }}>Timeline</Text>
-        {data.events.map((event, index) => (
+        {data.events.map((event: MatchEvent, index: number) => (
           <View
             key={`${event.time}-${index}`}
             style={{
