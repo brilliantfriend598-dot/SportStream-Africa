@@ -1,0 +1,18 @@
+{
+  "expo": {
+    "name": "SportStream Africa",
+    "slug": "sportstream-africa",
+    "scheme": "sportstreamafrica",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "dark",
+    "newArchEnabled": true,
+    "plugins": ["expo-router"],
+    "android": {
+      "package": "com.sportstream.africa"
+    },
+    "web": {
+      "bundler": "metro"
+    }
+  }
+}
