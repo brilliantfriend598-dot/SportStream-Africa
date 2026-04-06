@@ -1,6 +1,7 @@
 import { ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 import { theme } from '@/constants/theme';
 import { matches, newsItems } from '@/data/mockData';
 import { MatchCard } from '@/components/MatchCard';
@@ -8,6 +9,8 @@ import { NewsCard } from '@/components/NewsCard';
 import { SectionHeader } from '@/components/SectionHeader';
 
 export default function HomeScreen() {
+  const router = useRouter();
+
   return (
     <ScrollView
       style={{ flex: 1, backgroundColor: theme.colors.bg }}
@@ -70,6 +73,7 @@ export default function HomeScreen() {
         </View>
 
         <TouchableOpacity
+          onPress={() => router.push('/fixtures')}
           style={{
             marginTop: 18,
             backgroundColor: theme.colors.gold,
@@ -104,7 +108,11 @@ export default function HomeScreen() {
         />
       </View>
 
-      <SectionHeader title="Today’s Matches" action="All fixtures" />
+      <SectionHeader
+        title="Today’s Matches"
+        action="All fixtures"
+        onPress={() => router.push('/fixtures')}
+      />
       {matches.map((match) => (
         <MatchCard key={match.id} match={match} />
       ))}
