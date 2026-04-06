@@ -3,13 +3,14 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { theme } from '@/constants/theme';
-import { matches, newsItems } from '@/data/mockData';
+import { useTodayMatches } from '@/src/hooks/useTodayMatches';
 import { MatchCard } from '@/components/MatchCard';
 import { NewsCard } from '@/components/NewsCard';
 import { SectionHeader } from '@/components/SectionHeader';
 
 export default function HomeScreen() {
   const router = useRouter();
+  const { data: matches, loading, error } = useTodayMatches();
 
   return (
     <ScrollView
@@ -113,9 +114,32 @@ export default function HomeScreen() {
         action="All fixtures"
         onPress={() => router.push('/fixtures')}
       />
-      {matches.map((match) => (
-        <MatchCard key={match.id} match={match} />
-      ))}
+      {loading ? (
+        <View style={{ alignItems: 'center', paddingVertical: 20 }}>
+          <Text style={{ color: theme.colors.muted }}>Loading matches...</Text>
+        </View>
+      ) : error ? (
+        <View style={{ alignItems: 'center', paddingVertical: 20 }}>
+          <Text style={{ color: theme.colors.muted }}>Failed to load matches</Text>
+        </View>
+      ) : (
+        matches.slice(0, 3).map((match) => (
+          <MatchCard
+            key={match.id}
+            match={{
+              id: String(match.id),
+              league: match.league,
+              home: match.home,
+              away: match.away,
+              time: match.time,
+              status: match.status as 'LIVE' | 'UPCOMING' | 'FT',
+              score: match.score,
+              events: [],
+              stats: []
+            }}
+          />
+        ))
+      )}
 
       <SectionHeader title="Trending" />
       <View style={{ flexDirection: 'row', gap: 12 }}>
@@ -175,9 +199,9 @@ export default function HomeScreen() {
       </View>
 
       <SectionHeader title="Top News" />
-      {newsItems.map((item) => (
-        <NewsCard key={item.id} item={item} />
-      ))}
+      <View style={{ alignItems: 'center', paddingVertical: 20 }}>
+        <Text style={{ color: theme.colors.muted }}>News feed coming soon</Text>
+      </View>
     </ScrollView>
   );
 }
