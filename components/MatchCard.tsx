@@ -35,12 +35,6 @@ export function MatchCard({ match }: Props) {
         marginBottom: 12,
       }}
     >
-        borderWidth: 1,
-        borderRadius: theme.radius.xl,
-        padding: 16,
-        marginBottom: 12,
-      }}
-    >
       <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 12 }}>
         <Text style={{ color: theme.colors.muted, fontSize: 12, letterSpacing: 1, textTransform: 'uppercase' }}>
           {match.league}

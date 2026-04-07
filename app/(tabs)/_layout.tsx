@@ -19,7 +19,7 @@ export default function TabsLayout() {
         name="index"
         options={{
           title: 'Home',
-          tabBarIcon: ({ color, size }) => (
+          tabBarIcon: ({ color, size }: { color: string; size: number }) => (
             <Ionicons name="home" size={size} color={color} />
           ),
         }}
@@ -28,7 +28,7 @@ export default function TabsLayout() {
         name="fixtures"
         options={{
           title: 'Fixtures',
-          tabBarIcon: ({ color, size }) => (
+          tabBarIcon: ({ color, size }: { color: string; size: number }) => (
             <Ionicons name="calendar" size={size} color={color} />
           ),
         }}
@@ -37,7 +37,7 @@ export default function TabsLayout() {
         name="news"
         options={{
           title: 'News',
-          tabBarIcon: ({ color, size }) => (
+          tabBarIcon: ({ color, size }: { color: string; size: number }) => (
             <Ionicons name="newspaper" size={size} color={color} />
           ),
         }}
@@ -46,7 +46,7 @@ export default function TabsLayout() {
         name="watch"
         options={{
           title: 'Watch',
-          tabBarIcon: ({ color, size }) => (
+          tabBarIcon: ({ color, size }: { color: string; size: number }) => (
             <Ionicons name="play-circle" size={size} color={color} />
           ),
         }}
@@ -55,7 +55,7 @@ export default function TabsLayout() {
         name="profile"
         options={{
           title: 'Profile',
-          tabBarIcon: ({ color, size }) => (
+          tabBarIcon: ({ color, size }: { color: string; size: number }) => (
             <Ionicons name="person" size={size} color={color} />
           ),
         }}

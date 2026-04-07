@@ -6,12 +6,23 @@ export default function RootLayout() {
   return (
     <>
       <StatusBar style="light" />
-      <Stack
-        screenOptions={{
-          headerShown: false,
-          contentStyle: { backgroundColor: theme.colors.bg },
-        }}
-      />
+      <Stack screenOptions={{ headerShown: false }}>
+        <Stack.Screen
+          name="index"
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="(tabs)"
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="match/[id]"
+          options={{
+            headerShown: false,
+            contentStyle: { backgroundColor: theme.colors.bg },
+          }}
+        />
+      </Stack>
     </>
   );
 }
