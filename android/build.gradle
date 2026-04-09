@@ -2,12 +2,13 @@
 
 buildscript {
     ext {
-        buildToolsVersion = findProperty('android.buildToolsVersion') ?: '33.0.0'
-        minSdkVersion = Integer.parseInt(findProperty('android.minSdkVersion') ?: '21')
-        compileSdkVersion = Integer.parseInt(findProperty('android.compileSdkVersion') ?: '33')
-        targetSdkVersion = Integer.parseInt(findProperty('android.targetSdkVersion') ?: '33')
-        kotlinVersion = findProperty('android.kotlinVersion') ?: '1.8.10'
-        frescoVersion = findProperty('expo.frescoVersion') ?: '2.5.0'
+        buildToolsVersion = "34.0.0"
+        minSdkVersion = 23
+        compileSdkVersion = 34
+        targetSdkVersion = 34
+        kotlinVersion = "1.9.24"
+        frescoVersion = "2.5.0"
+        
 
         // We use NDK 23 which has both M1 support and is the side-by-side NDK version from AGP.
         ndkVersion = "23.1.7779620"
@@ -19,6 +20,7 @@ buildscript {
     dependencies {
         classpath('com.android.tools.build:gradle:7.4.2')
         classpath('com.facebook.react:react-native-gradle-plugin')
+        
     }
 }
 
@@ -37,4 +39,13 @@ allprojects {
         mavenCentral()
         maven { url 'https://www.jitpack.io' }
     }
+rootProject.ext {
+        buildToolsVersion = "34.0.0"
+        minSdkVersion = 23
+        compileSdkVersion = 34
+        targetSdkVersion = 34
+        kotlinVersion = "1.9.24"
+        frescoVersion = "2.5.0"
+        ndkVersion = "23.1.7779620"
+    }    
 }
