@@ -76,9 +76,8 @@ def enableProguardInReleaseBuilds = (findProperty('android.enableProguardInRelea
  */
 def jscFlavor = 'org.webkit:android-jsc:+'
 
-android {
-    ndkVersion rootProject.ext.ndkVersion
-
+android { 
+    ndkVersion = "23.1.7779620"
     compileSdkVersion rootProject.ext.compileSdkVersion
 
     namespace 'com.sportstream.africa'
@@ -141,7 +140,8 @@ dependencies {
     def isGifEnabled = (findProperty('expo.gif.enabled') ?: "") == "true";
     def isWebpEnabled = (findProperty('expo.webp.enabled') ?: "") == "true";
     def isWebpAnimatedEnabled = (findProperty('expo.webp.animated') ?: "") == "true";
-    def frescoVersion = rootProject.ext.frescoVersion
+    def frescoVersion = findProperty('expo.frescoVersion') ?: '2.5.0';
+
 
     // If your app supports Android versions before Ice Cream Sandwich (API level 14)
     if (isGifEnabled || isWebpEnabled) {
