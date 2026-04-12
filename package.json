@@ -11,6 +11,7 @@
     "reset": "expo start -c"
   },
   "dependencies": {
+    "@expo/vector-icons": "^14.0.3",
     "expo": "~51.0.0",
     "expo-constants": "~16.0.2",
     "expo-linear-gradient": "~13.0.2",
