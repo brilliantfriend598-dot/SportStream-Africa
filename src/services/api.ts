@@ -1,4 +1,4 @@
-import { apiConfig } from '@/constants/api';
+import { apiConfig } from '../lib/api/config';
 
 const headers = {
   'x-apisports-key': apiConfig.apiKey,
