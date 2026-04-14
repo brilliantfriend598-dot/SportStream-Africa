@@ -5,7 +5,6 @@ import { useRouter } from 'expo-router';
 import { theme } from '../../constants/theme';
 import { useTodayMatches } from '../../src/hooks/useTodayMatches';
 import { MatchCard } from '../../components/MatchCard';
-import { NewsCard } from '../../components/NewsCard';
 import { SectionHeader } from '../../components/SectionHeader';
 
 export default function HomeScreen() {
@@ -20,7 +19,15 @@ export default function HomeScreen() {
     >
       <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
         <View style={{ flex: 1, paddingRight: 12 }}>
-          <Text style={{ color: theme.colors.gold, fontSize: 11, fontWeight: '700', letterSpacing: 2, textTransform: 'uppercase' }}>
+          <Text
+            style={{
+              color: theme.colors.gold,
+              fontSize: 11,
+              fontWeight: '700',
+              letterSpacing: 2,
+              textTransform: 'uppercase',
+            }}
+          >
             SportStream Africa
           </Text>
           <Text style={{ color: theme.colors.text, fontSize: 22, fontWeight: '800', marginTop: 6 }}>
@@ -49,7 +56,15 @@ export default function HomeScreen() {
       >
         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
           <View style={{ flex: 1 }}>
-            <Text style={{ color: 'rgba(255,255,255,0.75)', fontSize: 12, fontWeight: '700', letterSpacing: 1.4, textTransform: 'uppercase' }}>
+            <Text
+              style={{
+                color: 'rgba(255,255,255,0.75)',
+                fontSize: 12,
+                fontWeight: '700',
+                letterSpacing: 1.4,
+                textTransform: 'uppercase',
+              }}
+            >
               Live now
             </Text>
             <Text style={{ color: theme.colors.text, fontSize: 28, fontWeight: '800', marginTop: 8 }}>
@@ -83,7 +98,7 @@ export default function HomeScreen() {
             alignItems: 'center',
           }}
         >
-          <Text style={{ color: '#111111', fontSize: 15, fontWeight: '800' }}>Explore today’s fixtures</Text>
+          <Text style={{ color: '#111111', fontSize: 15, fontWeight: '800' }}>Explore today's fixtures</Text>
         </TouchableOpacity>
       </LinearGradient>
 
@@ -109,11 +124,7 @@ export default function HomeScreen() {
         />
       </View>
 
-      <SectionHeader
-        title="Today’s Matches"
-        action="All fixtures"
-        onPress={() => router.push('/fixtures')}
-      />
+      <SectionHeader title="Today's Matches" action="All fixtures" onPress={() => router.push('/fixtures')} />
       {loading ? (
         <View style={{ alignItems: 'center', paddingVertical: 20 }}>
           <Text style={{ color: theme.colors.muted }}>Loading matches...</Text>
@@ -135,7 +146,7 @@ export default function HomeScreen() {
               status: match.status as 'LIVE' | 'UPCOMING' | 'FT',
               score: match.score,
               events: [],
-              stats: []
+              stats: [],
             }}
           />
         ))

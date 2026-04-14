@@ -16,7 +16,6 @@ echo Starting Expo development server...
 echo Please wait while the server initializes...
 echo.
 
-:: Echo 'y' to auto-confirm the npx package installation
-echo y | npx expo@49 start --web
+call npm run web
 
 pause

@@ -1,35 +1,46 @@
 # SportStream Africa Expo Starter
 
-This is a React Native / Expo Router starter based on the MVP UI structure we designed.
+This is an Expo Router starter for the SportStream Africa mobile app.
 
 ## What is included
 
-- Home tab
-- Watch tab
-- News tab
-- Profile tab
+- Home, Fixtures, News, Watch, and Profile tabs
 - Match details screen
-- Reusable cards
-- Mock data
-- Dark green / gold SportStream Africa theme
+- Reusable UI cards
+- Live football API integration with mock-data fallback
+- Dark green and gold SportStream Africa theme
 
 ## Quick start
 
 1. Install Node.js 20+.
-2. In a terminal, run:
+2. Copy `.env.example` to `.env`.
+3. For direct client access, set `EXPO_PUBLIC_FOOTBALL_API_KEY`.
+4. For safer local development, leave `EXPO_PUBLIC_FOOTBALL_API_KEY` empty, set `FOOTBALL_API_KEY`, and set `EXPO_PUBLIC_API_PROXY_URL`.
+5. Install dependencies with `npm install`.
+6. If you are using the local proxy, run `npm run proxy` in a second terminal.
+7. Start the app with `npx expo start`.
 
-```bash
-npm install
-npx expo start
-```
+## Environment variables
 
-3. Press `a` to open Android, or scan the QR code in Expo Go if your project setup supports it.
+This project reads:
 
-## Notes
+- `EXPO_PUBLIC_FOOTBALL_API_BASE_URL`
+- `EXPO_PUBLIC_FOOTBALL_API_KEY`
+- `EXPO_PUBLIC_API_PROXY_URL`
+- `EXPO_PUBLIC_DEFAULT_SEASON`
+- `EXPO_PUBLIC_DEFAULT_TIMEZONE`
+- `FOOTBALL_API_BASE_URL`
+- `FOOTBALL_API_KEY`
 
-This starter uses mock data so you can focus on UI first.
-Next steps:
-- connect football API
-- connect Firebase auth
-- add push notifications
-- replace placeholders with real logos and thumbnails
+If the API is unavailable or the credentials are missing, the app falls back to mock match and standings data so the UI still renders.
+
+## Security note
+
+Do not commit a real API key to the repo. `EXPO_PUBLIC_*` values are bundled into the client app, so production-safe API access should move behind your own backend, serverless function, or the included local proxy pattern.
+
+## Next steps
+
+- Move API requests behind a backend proxy
+- Connect Firebase auth
+- Add push notifications
+- Replace placeholder visuals with real logos and thumbnails

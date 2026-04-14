@@ -19,16 +19,14 @@ async function fetchFromAPI(endpoint: string) {
   }
 }
 
-// ✅ Get PSL fixtures (South Africa)
+// Get PSL fixtures (South Africa)
 export async function getFixtures() {
-  return fetchFromAPI(
-    `/fixtures?league=288&season=${apiConfig.defaultSeason}`
-  );
+  return fetchFromAPI(`/fixtures?league=288&season=${apiConfig.defaultSeason}`);
 }
 
-// ✅ Try live first, fallback if no subscription
+// Try live first, fallback if no subscription
 export async function getLiveMatches() {
-  let data = await fetchFromAPI(`/fixtures?live=all`);
+  let data = await fetchFromAPI('/fixtures?live=all');
 
   if (!data || data.length === 0) {
     console.log('No live data, falling back...');

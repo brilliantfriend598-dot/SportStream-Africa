@@ -1,67 +1,29 @@
-# SportStream Africa - Mobile Testing Guide
+# SportStream Africa Mobile Testing Guide
 
-## Option 1: Expo Go (Recommended for Testing)
+## Option 1: Expo Go
 
-### Prerequisites:
-1. **Install Expo Go app** on your Android device:
-   - Download from [Google Play Store](https://play.google.com/store/apps/details?id=host.exp.exponent)
+1. Install Expo Go on your Android device from the Google Play Store.
+2. Run `npm run web` or use `run-dev-server.bat`.
+3. Open Expo Go and scan the QR code shown in the terminal.
 
-### Steps to Test:
-1. **Start the development server:**
-   ```bash
-   npm run web
-   ```
+## Option 2: Safer local API proxy
 
-2. **On your Android device:**
-   - Open Expo Go app
-   - Scan the QR code shown in terminal
-   - Your app will load instantly!
+1. Put your real API key in `.env` as `FOOTBALL_API_KEY`.
+2. Set `EXPO_PUBLIC_API_PROXY_URL=http://YOUR_COMPUTER_IP:8787` in `.env`.
+3. Start the proxy with `npm run proxy`.
+4. Start Expo with `npm run web`.
 
-## Option 2: Development Build APK
+This keeps the API key out of the mobile client during local development.
 
-### Prerequisites:
-1. **Expo Account:** Sign up at [expo.dev](https://expo.dev)
-2. **EAS CLI:** Install globally
-   ```bash
-   npm install -g eas-cli
-   ```
+## Option 3: Development build APK
 
-### Build Steps:
-1. **Login to Expo:**
-   ```bash
-   npx expo login
-   ```
+1. Install `eas-cli`.
+2. Run `npx expo login`.
+3. Run `npx eas build:configure`.
+4. Run `npx eas build --platform android --profile development`.
 
-2. **Configure EAS:**
-   ```bash
-   npx eas build:configure
-   ```
+## Notes
 
-3. **Build development APK:**
-   ```bash
-   npx eas build --platform android --profile development
-   ```
-
-4. **Download and install** the APK from the build link
-
-## Option 3: Production Build
-
-For a production-ready APK:
-
-```bash
-npx eas build --platform android --profile production
-```
-
-## Current App Features:
-- ✅ Dark theme football app
-- ✅ Tab navigation (Home, Fixtures, News, Watch, Profile)
-- ✅ Match details with stats and timeline
-- ✅ API integration with football data
-- ✅ Responsive design
-
-## Troubleshooting:
-- If QR code doesn't work, ensure both device and computer are on same WiFi
-- For build issues, check [Expo documentation](https://docs.expo.dev/)
-- Make sure Node.js and npm are properly installed
-
-Would you like me to help you set up any of these options?
+- Use Expo Go for the fastest testing loop.
+- Use the proxy when you do not want to expose the API key to the client bundle.
+- For production, move API access behind your own backend or serverless function.

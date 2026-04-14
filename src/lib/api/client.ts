@@ -16,7 +16,7 @@ export async function apiGet<T>(
   path: string,
   params: Record<string, QueryValue> = {},
 ): Promise<T> {
-  if (!apiConfig.baseUrl || !apiConfig.apiKey) {
+  if (!apiConfig.baseUrl) {
     throw new Error('Missing API configuration');
   }
 
@@ -26,7 +26,7 @@ export async function apiGet<T>(
   const response = await fetch(url, {
     method: 'GET',
     headers: {
-      'x-apisports-key': apiConfig.apiKey,
+      ...(apiConfig.apiKey ? { 'x-apisports-key': apiConfig.apiKey } : {}),
     },
   });
 

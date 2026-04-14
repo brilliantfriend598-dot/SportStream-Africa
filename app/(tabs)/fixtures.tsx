@@ -1,7 +1,7 @@
-import { ScrollView, Text, View, ActivityIndicator } from 'react-native';
+import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
 import { theme } from '../../constants/theme';
-import { useTodayMatches } from '../../src/hooks/useTodayMatches';
 import { MatchCard } from '../../components/MatchCard';
+import { useTodayMatches } from '../../src/hooks/useTodayMatches';
 
 export default function FixturesScreen() {
   const { data, loading, error, refetch } = useTodayMatches();
@@ -17,10 +17,14 @@ export default function FixturesScreen() {
 
   if (error) {
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: theme.colors.bg, padding: 20 }}>
+      <View
+        style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: theme.colors.bg, padding: 20 }}
+      >
         <Text style={{ color: theme.colors.text, fontSize: 18, marginBottom: 16 }}>Failed to load fixtures</Text>
         <Text style={{ color: theme.colors.muted, textAlign: 'center', marginBottom: 20 }}>{error}</Text>
-        <Text style={{ color: theme.colors.gold, fontWeight: '600' }} onPress={refetch}>Try again</Text>
+        <Text style={{ color: theme.colors.gold, fontWeight: '600' }} onPress={refetch}>
+          Try again
+        </Text>
       </View>
     );
   }
@@ -32,15 +36,21 @@ export default function FixturesScreen() {
       showsVerticalScrollIndicator={false}
     >
       <View style={{ marginBottom: 24 }}>
-        <Text style={{ color: theme.colors.gold, fontSize: 11, fontWeight: '700', letterSpacing: 2, textTransform: 'uppercase' }}>
+        <Text
+          style={{
+            color: theme.colors.gold,
+            fontSize: 11,
+            fontWeight: '700',
+            letterSpacing: 2,
+            textTransform: 'uppercase',
+          }}
+        >
           Fixtures
         </Text>
         <Text style={{ color: theme.colors.text, fontSize: 22, fontWeight: '800', marginTop: 6 }}>
-          Today’s schedule
+          Today's schedule
         </Text>
-        <Text style={{ color: theme.colors.muted, fontSize: 14, marginTop: 4 }}>
-          {data.length} matches found
-        </Text>
+        <Text style={{ color: theme.colors.muted, fontSize: 14, marginTop: 4 }}>{data.length} matches found</Text>
       </View>
 
       {data.length === 0 ? (
@@ -60,7 +70,7 @@ export default function FixturesScreen() {
               status: match.status as 'LIVE' | 'UPCOMING' | 'FT',
               score: match.score,
               events: [],
-              stats: []
+              stats: [],
             }}
           />
         ))
