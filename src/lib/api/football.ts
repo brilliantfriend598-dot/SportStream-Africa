@@ -1,7 +1,6 @@
 import { apiGet } from './client';
 import { apiConfig } from './config';
 import { DEFAULT_HOME_LEAGUES } from '@/src/constants/leagues';
-import { mockMatchDetails, mockMatches, mockStandings } from './mock';
 import type { ApiResponse, MatchDetails, MatchEvent, MatchItem, MatchStat, StandingRow } from './types';
 
 function formatStatus(raw?: string): string {
@@ -58,74 +57,59 @@ function flattenEvents(events: any[] | undefined): MatchEvent[] {
 }
 
 export async function getTodayMatches(date = new Date().toISOString().slice(0, 10)): Promise<MatchItem[]> {
-  try {
-    const requests = DEFAULT_HOME_LEAGUES.map((league) =>
-      apiGet<ApiResponse<any[]>>('/fixtures', {
-        date,
-        league,
-        season: apiConfig.defaultSeason,
-        timezone: apiConfig.defaultTimezone,
-      }),
-    );
+  const requests = DEFAULT_HOME_LEAGUES.map((league) =>
+    apiGet<ApiResponse<any[]>>('/fixtures', {
+      date,
+      league,
+      season: apiConfig.defaultSeason,
+      timezone: apiConfig.defaultTimezone,
+    }),
+  );
 
-    const results = await Promise.all(requests);
-    return results.flatMap((result) => (result.response ?? []).map(mapFixture));
-  } catch (error) {
-    console.warn('Falling back to mock matches', error);
-    return mockMatches;
-  }
+  const results = await Promise.all(requests);
+  return results.flatMap((result) => (result.response ?? []).map(mapFixture));
 }
 
 export async function getMatchDetails(matchId: number): Promise<MatchDetails> {
-  try {
-    const [fixtureResult, statsResult, eventsResult] = await Promise.all([
-      apiGet<ApiResponse<any[]>>('/fixtures', { id: matchId, timezone: apiConfig.defaultTimezone }),
-      apiGet<ApiResponse<any[]>>('/fixtures/statistics', { fixture: matchId }),
-      apiGet<ApiResponse<any[]>>('/fixtures/events', { fixture: matchId }),
-    ]);
+  const [fixtureResult, statsResult, eventsResult] = await Promise.all([
+    apiGet<ApiResponse<any[]>>('/fixtures', { id: matchId, timezone: apiConfig.defaultTimezone }),
+    apiGet<ApiResponse<any[]>>('/fixtures/statistics', { fixture: matchId }),
+    apiGet<ApiResponse<any[]>>('/fixtures/events', { fixture: matchId }),
+  ]);
 
-    const fixture = fixtureResult.response?.[0];
-    if (!fixture) throw new Error('Match not found');
+  const fixture = fixtureResult.response?.[0];
+  if (!fixture) throw new Error('Match not found');
 
-    return {
-      id: fixture.fixture.id,
-      league: fixture.league.name,
-      home: fixture.teams.home.name,
-      away: fixture.teams.away.name,
-      score:
-        fixture.goals?.home === null || fixture.goals?.away === null
-          ? 'vs'
-          : `${fixture.goals.home} - ${fixture.goals.away}`,
-      status: formatStatus(fixture.fixture.status?.short),
-      venue: fixture.fixture.venue?.name,
-      events: flattenEvents(eventsResult.response),
-      stats: flattenStats(statsResult.response),
-    };
-  } catch (error) {
-    console.warn('Falling back to mock match details', error);
-    return mockMatchDetails;
-  }
+  return {
+    id: fixture.fixture.id,
+    league: fixture.league.name,
+    home: fixture.teams.home.name,
+    away: fixture.teams.away.name,
+    score:
+      fixture.goals?.home === null || fixture.goals?.away === null
+        ? 'vs'
+        : `${fixture.goals.home} - ${fixture.goals.away}`,
+    status: formatStatus(fixture.fixture.status?.short),
+    venue: fixture.fixture.venue?.name,
+    events: flattenEvents(eventsResult.response),
+    stats: flattenStats(statsResult.response),
+  };
 }
 
 export async function getStandings(leagueId: number): Promise<StandingRow[]> {
-  try {
-    const result = await apiGet<ApiResponse<any[]>>('/standings', {
-      league: leagueId,
-      season: apiConfig.defaultSeason,
-    });
+  const result = await apiGet<ApiResponse<any[]>>('/standings', {
+    league: leagueId,
+    season: apiConfig.defaultSeason,
+  });
 
-    const rows = result.response?.[0]?.league?.standings?.[0] ?? [];
-    return rows.map((row: any) => ({
-      rank: row.rank,
-      team: row.team.name,
-      played: row.all.played,
-      won: row.all.win,
-      drawn: row.all.draw,
-      lost: row.all.lose,
-      points: row.points,
-    }));
-  } catch (error) {
-    console.warn('Falling back to mock standings', error);
-    return mockStandings;
-  }
+  const rows = result.response?.[0]?.league?.standings?.[0] ?? [];
+  return rows.map((row: any) => ({
+    rank: row.rank,
+    team: row.team.name,
+    played: row.all.played,
+    won: row.all.win,
+    drawn: row.all.draw,
+    lost: row.all.lose,
+    points: row.points,
+  }));
 }

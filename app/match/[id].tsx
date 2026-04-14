@@ -1,13 +1,14 @@
-﻿import React from 'react';
+import React from 'react';
 import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
+import { DataSourceBadge } from '@/components/DataSourceBadge';
 import { useMatchDetails } from '@/src/hooks/useMatchDetails';
 import type { MatchEvent, MatchStat } from '@/src/lib/api/types';
 
 export default function MatchDetailsScreen() {
   const params = useLocalSearchParams();
   const matchId = Number(params.id);
-  const { data, loading, error } = useMatchDetails(matchId);
+  const { data, loading, error, notice, source } = useMatchDetails(matchId);
 
   if (loading) {
     return (
@@ -34,9 +35,22 @@ export default function MatchDetailsScreen() {
         {data.home} {data.score} {data.away}
       </Text>
       <Text style={{ color: '#F4C430', fontWeight: '600' }}>{data.status}</Text>
+      <DataSourceBadge source={source} />
 
-      {data.venue ? (
-        <Text style={{ color: '#A3A3A3' }}>Venue: {data.venue}</Text>
+      {data.venue ? <Text style={{ color: '#A3A3A3' }}>Venue: {data.venue}</Text> : null}
+
+      {notice ? (
+        <View
+          style={{
+            backgroundColor: '#1A1607',
+            borderColor: '#F4C430',
+            borderWidth: 1,
+            borderRadius: 16,
+            padding: 12,
+          }}
+        >
+          <Text style={{ color: '#F4C430', fontSize: 12, lineHeight: 18 }}>{notice}</Text>
+        </View>
       ) : null}
 
       <View style={{ gap: 10 }}>

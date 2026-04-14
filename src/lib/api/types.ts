@@ -4,6 +4,8 @@ export type ApiResponse<T> = {
   errors?: unknown;
 };
 
+export type ApiErrorCode = 'CONFIG' | 'SUBSCRIPTION' | 'NETWORK' | 'NOT_FOUND' | 'UNKNOWN';
+
 export type MatchStatus = 'LIVE' | 'FT' | 'UPCOMING' | string;
 
 export type MatchItem = {

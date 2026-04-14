@@ -1,21 +1,25 @@
-import { ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { RefreshControl, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { theme } from '../../constants/theme';
 import { useTodayMatches } from '../../src/hooks/useTodayMatches';
+import { DataSourceBadge } from '../../components/DataSourceBadge';
 import { MatchCard } from '../../components/MatchCard';
 import { SectionHeader } from '../../components/SectionHeader';
 
 export default function HomeScreen() {
   const router = useRouter();
-  const { data: matches, loading, error } = useTodayMatches();
+  const { data: matches, loading, error, notice, source, refetch } = useTodayMatches();
 
   return (
     <ScrollView
       style={{ flex: 1, backgroundColor: theme.colors.bg }}
       contentContainerStyle={{ padding: 16, paddingTop: 20, paddingBottom: 100 }}
       showsVerticalScrollIndicator={false}
+      refreshControl={
+        <RefreshControl refreshing={loading} onRefresh={refetch} tintColor={theme.colors.gold} />
+      }
     >
       <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
         <View style={{ flex: 1, paddingRight: 12 }}>
@@ -125,6 +129,23 @@ export default function HomeScreen() {
       </View>
 
       <SectionHeader title="Today's Matches" action="All fixtures" onPress={() => router.push('/fixtures')} />
+      <View style={{ marginBottom: 12 }}>
+        <DataSourceBadge source={source} />
+      </View>
+      {notice ? (
+        <View
+          style={{
+            backgroundColor: '#1A1607',
+            borderColor: theme.colors.gold,
+            borderWidth: 1,
+            borderRadius: 16,
+            padding: 12,
+            marginBottom: 12,
+          }}
+        >
+          <Text style={{ color: theme.colors.gold, fontSize: 12, lineHeight: 18 }}>{notice}</Text>
+        </View>
+      ) : null}
       {loading ? (
         <View style={{ alignItems: 'center', paddingVertical: 20 }}>
           <Text style={{ color: theme.colors.muted }}>Loading matches...</Text>

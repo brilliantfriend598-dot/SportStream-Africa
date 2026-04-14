@@ -9,7 +9,9 @@
     "userInterfaceStyle": "dark",
     "plugins": ["expo-router"],
     "android": {
-      "package": "com.sportstream.africa"
+      "package": "com.sportstream.africa",
+      "versionCode": 1,
+      "usesCleartextTraffic": true
     },
     "web": {
       "bundler": "metro"

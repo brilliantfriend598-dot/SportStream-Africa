@@ -3,12 +3,15 @@
 const fs = require('fs');
 const http = require('http');
 const https = require('https');
+const os = require('os');
 const path = require('path');
 const { URL } = require('url');
 
 loadEnvFile(path.join(__dirname, '.env'));
 
-const upstreamBase = process.env.FOOTBALL_API_BASE_URL || process.env.EXPO_PUBLIC_FOOTBALL_API_BASE_URL;
+const upstreamBase = normalizeBaseUrl(
+  process.env.FOOTBALL_API_BASE_URL || process.env.EXPO_PUBLIC_FOOTBALL_API_BASE_URL || '',
+);
 const apiKey = process.env.FOOTBALL_API_KEY || process.env.EXPO_PUBLIC_FOOTBALL_API_KEY;
 const host = process.env.PROXY_HOST || '0.0.0.0';
 const port = Number(process.env.PROXY_PORT || 8787);
@@ -41,6 +44,16 @@ const server = http.createServer((req, res) => {
   }
 
   const requestUrl = new URL(req.url, `http://${req.headers.host || 'localhost'}`);
+
+  if (requestUrl.pathname === '/health') {
+    sendJson(res, 200, {
+      ok: true,
+      upstream: upstreamUrl.origin,
+      proxyBaseUrl: getSuggestedProxyUrls(port),
+      timestamp: new Date().toISOString(),
+    });
+    return;
+  }
 
   if (!allowedPrefixes.some((prefix) => requestUrl.pathname.startsWith(prefix))) {
     sendJson(res, 404, { error: 'Unsupported endpoint' });
@@ -80,7 +93,15 @@ const server = http.createServer((req, res) => {
 });
 
 server.listen(port, host, () => {
+  const suggestedUrls = getSuggestedProxyUrls(port);
+
   console.log(`SportStream proxy listening on http://${host}:${port}`);
+  console.log('');
+  console.log('Use one of these in EXPO_PUBLIC_API_PROXY_URL for phone testing:');
+  suggestedUrls.forEach((url) => console.log(`- ${url}`));
+  console.log('');
+  console.log('Health check:');
+  suggestedUrls.forEach((url) => console.log(`- ${url}/health`));
 });
 
 function loadEnvFile(filePath) {
@@ -108,6 +129,25 @@ function loadEnvFile(filePath) {
       process.env[key] = value;
     }
   });
+}
+
+function normalizeBaseUrl(url) {
+  return url.replace(/\/+$/, '');
+}
+
+function getSuggestedProxyUrls(port) {
+  const urls = [`http://localhost:${port}`];
+  const interfaces = os.networkInterfaces();
+
+  Object.values(interfaces).forEach((entries) => {
+    (entries || []).forEach((entry) => {
+      if (entry && entry.family === 'IPv4' && !entry.internal) {
+        urls.push(`http://${entry.address}:${port}`);
+      }
+    });
+  });
+
+  return Array.from(new Set(urls));
 }
 
 function setCorsHeaders(res) {

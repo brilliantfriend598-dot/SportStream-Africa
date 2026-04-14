@@ -1,10 +1,11 @@
-import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
+import { ActivityIndicator, RefreshControl, ScrollView, Text, View } from 'react-native';
+import { DataSourceBadge } from '../../components/DataSourceBadge';
 import { theme } from '../../constants/theme';
 import { MatchCard } from '../../components/MatchCard';
 import { useTodayMatches } from '../../src/hooks/useTodayMatches';
 
 export default function FixturesScreen() {
-  const { data, loading, error, refetch } = useTodayMatches();
+  const { data, loading, error, notice, source, refetch } = useTodayMatches();
 
   if (loading) {
     return (
@@ -34,6 +35,9 @@ export default function FixturesScreen() {
       style={{ flex: 1, backgroundColor: theme.colors.bg }}
       contentContainerStyle={{ padding: 16, paddingTop: 20, paddingBottom: 100 }}
       showsVerticalScrollIndicator={false}
+      refreshControl={
+        <RefreshControl refreshing={loading} onRefresh={refetch} tintColor={theme.colors.gold} />
+      }
     >
       <View style={{ marginBottom: 24 }}>
         <Text
@@ -52,6 +56,25 @@ export default function FixturesScreen() {
         </Text>
         <Text style={{ color: theme.colors.muted, fontSize: 14, marginTop: 4 }}>{data.length} matches found</Text>
       </View>
+
+      <View style={{ marginBottom: 12 }}>
+        <DataSourceBadge source={source} />
+      </View>
+
+      {notice ? (
+        <View
+          style={{
+            backgroundColor: '#1A1607',
+            borderColor: theme.colors.gold,
+            borderWidth: 1,
+            borderRadius: 16,
+            padding: 12,
+            marginBottom: 16,
+          }}
+        >
+          <Text style={{ color: theme.colors.gold, fontSize: 12, lineHeight: 18 }}>{notice}</Text>
+        </View>
+      ) : null}
 
       {data.length === 0 ? (
         <View style={{ alignItems: 'center', paddingVertical: 40 }}>
