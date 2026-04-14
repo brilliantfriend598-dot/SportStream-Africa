@@ -1,8 +1,8 @@
 import { ScrollView, Text } from 'react-native';
-import { theme } from '@/constants/theme';
-import { SectionHeader } from '@/components/SectionHeader';
-import { NewsCard } from '@/components/NewsCard';
-import { newsItems } from '@/data/mockData';
+import { theme } from '../../constants/theme';
+import { SectionHeader } from '../../components/SectionHeader';
+import { NewsCard } from '../../components/NewsCard';
+import { newsItems } from '../../data/mockData';
 
 export default function NewsScreen() {
   return (

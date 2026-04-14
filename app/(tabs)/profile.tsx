@@ -1,6 +1,6 @@
 import { Text, TouchableOpacity, View } from 'react-native';
-import { theme } from '@/constants/theme';
-import { PreferenceRow } from '@/components/PreferenceRow';
+import { theme } from '../../constants/theme';
+import { PreferenceRow } from '../../components/PreferenceRow';
 
 export default function ProfileScreen() {
   return (

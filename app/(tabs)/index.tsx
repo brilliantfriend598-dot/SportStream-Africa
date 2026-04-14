@@ -2,11 +2,11 @@ import { ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-nativ
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { theme } from '@/constants/theme';
-import { useTodayMatches } from '@/src/hooks/useTodayMatches';
-import { MatchCard } from '@/components/MatchCard';
-import { NewsCard } from '@/components/NewsCard';
-import { SectionHeader } from '@/components/SectionHeader';
+import { theme } from '../../constants/theme';
+import { useTodayMatches } from '../../src/hooks/useTodayMatches';
+import { MatchCard } from '../../components/MatchCard';
+import { NewsCard } from '../../components/NewsCard';
+import { SectionHeader } from '../../components/SectionHeader';
 
 export default function HomeScreen() {
   const router = useRouter();

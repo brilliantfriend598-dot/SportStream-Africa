@@ -1,8 +1,8 @@
 import { ScrollView, Text } from 'react-native';
-import { theme } from '@/constants/theme';
-import { SectionHeader } from '@/components/SectionHeader';
-import { VideoCard } from '@/components/VideoCard';
-import { videoItems } from '@/data/mockData';
+import { theme } from '../../constants/theme';
+import { SectionHeader } from '../../components/SectionHeader';
+import { VideoCard } from '../../components/VideoCard';
+import { videoItems } from '../../data/mockData';
 
 export default function WatchScreen() {
   return (
