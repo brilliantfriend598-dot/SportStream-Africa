@@ -1,7 +1,7 @@
 import { ScrollView, Text, View, ActivityIndicator } from 'react-native';
-import { theme } from '@/constants/theme';
-import { useTodayMatches } from '@/src/hooks/useTodayMatches';
-import { MatchCard } from '@/components/MatchCard';
+import { theme } from '../../constants/theme';
+import { useTodayMatches } from '../../src/hooks/useTodayMatches';
+import { MatchCard } from '../../components/MatchCard';
 
 export default function FixturesScreen() {
   const { data, loading, error, refetch } = useTodayMatches();
