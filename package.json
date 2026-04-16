@@ -10,6 +10,7 @@
     "ios": "expo run:ios",
     "web": "expo start --web",
     "proxy": "node proxy-server.js",
+    "proxy:hosted": "vercel --prod",
     "reset": "expo start -c"
   },
   "dependencies": {

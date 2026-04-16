@@ -40,6 +40,29 @@ The local proxy also exposes `/health` so you can verify that your phone can rea
 
 Do not commit a real API key to the repo. `EXPO_PUBLIC_*` values are bundled into the client app, so production-safe API access should move behind your own backend, serverless function, or the included local proxy pattern.
 
+## Hosted backend
+
+This repo now includes a deployable serverless proxy:
+
+- Local entry: [proxy-server.js](C:/Users/Botsh/Downloads/sportstream-africa-expo-starter/sportstream-africa-expo-starter/proxy-server.js)
+- Shared proxy logic: [backend/proxy-core.js](C:/Users/Botsh/Downloads/sportstream-africa-expo-starter/sportstream-africa-expo-starter/backend/proxy-core.js)
+- Hosted function entry: [api/index.js](C:/Users/Botsh/Downloads/sportstream-africa-expo-starter/sportstream-africa-expo-starter/api/index.js)
+- Vercel config: [vercel.json](C:/Users/Botsh/Downloads/sportstream-africa-expo-starter/sportstream-africa-expo-starter/vercel.json)
+
+Recommended deployment path:
+
+1. Install Vercel CLI with `npm install -g vercel`.
+2. Run `vercel` from the project root and link the project.
+3. In Vercel project settings, add:
+`FOOTBALL_API_BASE_URL=https://v3.football.api-sports.io`
+`FOOTBALL_API_KEY=your-real-server-side-key`
+4. Deploy to production with `vercel --prod`.
+5. Set `EXPO_PUBLIC_API_PROXY_URL=https://your-project.vercel.app`.
+6. Rebuild the app with the `preview` profile so the APK points at the hosted backend.
+
+The hosted proxy exposes the same endpoints as local development, including `/health`.
+There is also a step-by-step guide in [HOSTED_BACKEND_SETUP.md](C:/Users/Botsh/Downloads/sportstream-africa-expo-starter/sportstream-africa-expo-starter/HOSTED_BACKEND_SETUP.md).
+
 ## Next steps
 
 - Move API requests behind a backend proxy
