@@ -60,3 +60,4 @@ Notes:
 - The `preview` profile creates a simple internal APK without the dev client.
 - The `production` profile is configured for an Android App Bundle when you reach store-release prep.
 - Android cleartext traffic is enabled in `app.json` so development builds can reach a local `http://` proxy on your Wi-Fi network.
+- Placeholder app icon and splash assets are included under `assets/` so builds no longer fall back to generic defaults.

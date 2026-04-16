@@ -35,4 +35,5 @@ Profile notes:
 - Use the proxy when you do not want to expose the API key to the client bundle.
 - On a physical phone, do not use `localhost` for `EXPO_PUBLIC_API_PROXY_URL`; use the LAN IP printed by `npm run proxy`.
 - Android development builds in this project allow `http://` LAN proxy traffic, so you can test against your local machine without HTTPS during development.
+- Placeholder icon and splash assets are already configured, so the installed APK should look branded instead of generic.
 - For production, move API access behind your own backend or serverless function.
