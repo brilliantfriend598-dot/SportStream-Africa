@@ -2,7 +2,11 @@
   "expo": {
     "name": "SportStream Africa",
     "slug": "sportstream-africa",
-    "platforms": ["android", "ios", "web"],
+    "platforms": [
+      "android",
+      "ios",
+      "web"
+    ],
     "scheme": "sportstreamafrica",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -13,7 +17,9 @@
       "resizeMode": "contain",
       "backgroundColor": "#0A0A0A"
     },
-    "plugins": ["expo-router"],
+    "plugins": [
+      "expo-router"
+    ],
     "android": {
       "package": "com.sportstream.africa",
       "versionCode": 1,
@@ -26,6 +32,14 @@
     "web": {
       "bundler": "metro",
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "8be1a3ac-28d0-4b79-b331-47589c7dd998"
+      }
     }
   }
 }

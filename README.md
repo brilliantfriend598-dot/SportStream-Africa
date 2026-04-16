@@ -57,7 +57,24 @@ Do not commit a real API key to the repo. `EXPO_PUBLIC_*` values are bundled int
 
 Notes:
 - The `development` profile creates an internal APK with the Expo development client enabled.
-- The `preview` profile creates a simple internal APK without the dev client.
+- After installing a `development` build, start Metro with `npm run dev-client` before opening the app on your phone.
+- The `preview` profile creates a simple internal APK without the dev client and is the right choice when you want a standalone tester build.
 - The `production` profile is configured for an Android App Bundle when you reach store-release prep.
 - Android cleartext traffic is enabled in `app.json` so development builds can reach a local `http://` proxy on your Wi-Fi network.
 - Placeholder app icon and splash assets are included under `assets/` so builds no longer fall back to generic defaults.
+
+## Which build to use
+
+- Use `development` when you want a true dev-client workflow with live Metro reloads.
+- Use `preview` when you want an APK that opens by itself on the phone without running Metro.
+
+Common commands:
+
+```bash
+npx eas build --platform android --profile development
+npm run dev-client
+```
+
+```bash
+npx eas build --platform android --profile preview
+```

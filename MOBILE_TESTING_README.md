@@ -23,10 +23,12 @@ This keeps the API key out of the mobile client during local development.
 3. Run `npx eas build:configure`.
 4. Run `npx eas build --platform android --profile development`.
 5. Install the APK on your phone once the build finishes.
+6. Start Metro with `npm run dev-client`.
+7. Open the app on your phone while your computer and phone are on the same Wi-Fi network.
 
 Profile notes:
-- `development`: internal APK with Expo development client support
-- `preview`: internal APK for broader tester installs
+- `development`: internal APK with Expo development client support and requires Metro
+- `preview`: internal APK for broader tester installs and does not require Metro after install
 - `production`: app bundle for store-ready release work
 
 ## Notes
