@@ -1,5 +1,10 @@
 import { createContext, useContext, useEffect, useMemo, useState, type PropsWithChildren } from 'react';
 import { getAuthProviderName, getAuthService } from '@/src/services/authProvider';
+import {
+  clearStoredAuthSession,
+  readStoredAuthSession,
+  writeStoredAuthSession,
+} from '@/src/services/authSessionStorage';
 import type { AuthCredentials, AuthProviderName, AuthUser } from '@/src/services/authTypes';
 
 interface AuthContextValue {
@@ -25,11 +30,34 @@ export function AuthProvider({ children }: PropsWithChildren) {
   useEffect(() => {
     let isMounted = true;
 
-    authService
-      .getCurrentUser()
-      .then((nextUser) => {
+    async function loadSession() {
+      const storedSession = await readStoredAuthSession();
+
+      if (storedSession?.provider === provider) {
+        const restoredUser = await authService.restoreSession(storedSession.session);
+
+        if (isMounted) {
+          setUser(restoredUser);
+        }
+      } else {
+        const nextUser = await authService.getCurrentUser();
+
         if (isMounted) {
           setUser(nextUser);
+        }
+      }
+
+      if (storedSession && storedSession.provider !== provider) {
+        await clearStoredAuthSession();
+      }
+    }
+
+    loadSession()
+      .catch(async () => {
+        await clearStoredAuthSession();
+
+        if (isMounted) {
+          setUser(null);
         }
       })
       .finally(() => {
@@ -51,14 +79,23 @@ export function AuthProvider({ children }: PropsWithChildren) {
       isAuthenticated: Boolean(user),
       async signIn(credentials) {
         const nextUser = await authService.signIn(credentials);
+        const session = await authService.serializeSession();
+        if (session) {
+          await writeStoredAuthSession(provider, session);
+        }
         setUser(nextUser);
       },
       async signUp(credentials) {
         const nextUser = await authService.signUp(credentials);
+        const session = await authService.serializeSession();
+        if (session) {
+          await writeStoredAuthSession(provider, session);
+        }
         setUser(nextUser);
       },
       async signOut() {
         await authService.signOut();
+        await clearStoredAuthSession();
         setUser(null);
       },
       async resetPassword(email) {

@@ -1,4 +1,10 @@
-import { AuthError, type AuthCredentials, type AuthService, type AuthUser } from './authTypes';
+import {
+  AuthError,
+  type AuthCredentials,
+  type AuthService,
+  type AuthSession,
+  type AuthUser,
+} from './authTypes';
 
 const DEMO_EMAIL = 'demo@sportstream.africa';
 const DEMO_PASSWORD = 'password123';
@@ -22,6 +28,19 @@ function validateCredentials({ email, password }: AuthCredentials) {
 export const mockAuthApi: AuthService = {
   async getCurrentUser() {
     return currentUser;
+  },
+  async restoreSession(session) {
+    currentUser = session.user;
+    return currentUser;
+  },
+  async serializeSession() {
+    if (!currentUser) {
+      return null;
+    }
+
+    return {
+      user: currentUser,
+    } satisfies AuthSession;
   },
   async signIn(credentials) {
     validateCredentials(credentials);

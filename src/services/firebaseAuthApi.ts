@@ -1,4 +1,10 @@
-import { AuthError, type AuthCredentials, type AuthService, type AuthUser } from './authTypes';
+import {
+  AuthError,
+  type AuthCredentials,
+  type AuthService,
+  type AuthSession,
+  type AuthUser,
+} from './authTypes';
 
 const FIREBASE_AUTH_BASE_URL = 'https://identitytoolkit.googleapis.com/v1';
 
@@ -106,6 +112,27 @@ export const firebaseAuthApi: AuthService = {
 
     currentUser = toAuthUser(user);
     return currentUser;
+  },
+  async restoreSession(session) {
+    currentIdToken = session.idToken || '';
+    currentUser = session.user;
+
+    if (!currentIdToken) {
+      currentUser = null;
+      return null;
+    }
+
+    return this.getCurrentUser();
+  },
+  async serializeSession() {
+    if (!currentUser || !currentIdToken) {
+      return null;
+    }
+
+    return {
+      user: currentUser,
+      idToken: currentIdToken,
+    } satisfies AuthSession;
   },
   async signIn(credentials) {
     const payload = await firebaseRequest<{

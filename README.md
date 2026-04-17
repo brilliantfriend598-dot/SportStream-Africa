@@ -68,6 +68,8 @@ To enable Firebase auth:
 3. Set `EXPO_PUBLIC_AUTH_PROVIDER=firebase`.
 4. Restart Expo or rebuild the app.
 
+Sessions now persist across app restarts on installed device builds, and the web build uses browser storage during local development.
+
 Mock mode still works without Firebase setup and uses:
 
 - email: `demo@sportstream.africa`

@@ -6,6 +6,11 @@ export interface AuthUser {
   displayName?: string;
 }
 
+export interface AuthSession {
+  user: AuthUser;
+  idToken?: string;
+}
+
 export interface AuthCredentials {
   email: string;
   password: string;
@@ -13,6 +18,8 @@ export interface AuthCredentials {
 
 export interface AuthService {
   getCurrentUser: () => Promise<AuthUser | null>;
+  restoreSession: (session: AuthSession) => Promise<AuthUser | null>;
+  serializeSession: () => Promise<AuthSession | null>;
   signIn: (credentials: AuthCredentials) => Promise<AuthUser>;
   signUp: (credentials: AuthCredentials) => Promise<AuthUser>;
   signOut: () => Promise<void>;
