@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { ApiClientError } from '@/src/lib/api/client';
 import { getFootballDataProvider, getStandings } from '@/src/services/footballApi';
+import { resolveFallbackNotice, resolveListFetchState } from '@/src/services/footballFallback';
 import { mockFootballApi } from '@/src/services/mockFootballApi';
 import type { Standing } from '@/src/services/footballTypes';
 
@@ -21,17 +22,24 @@ export function useStandings(leagueId?: number) {
       const result = await getStandings(leagueId);
       if (result.length === 0) {
         const fallback = await mockFootballApi.getStandings(leagueId);
+        const nextState = resolveListFetchState(
+          provider,
+          false,
+          'Live standings are unavailable right now. Showing sample data instead.',
+          null,
+        );
         setData(fallback);
-        setNotice(provider === 'live' ? 'Live standings are unavailable right now. Showing sample data instead.' : null);
-        setSource('sample');
+        setNotice(nextState.notice);
+        setSource(nextState.source as 'live' | 'sample');
       } else {
+        const nextState = resolveListFetchState(provider, true, null, null);
         setData(result);
-        setSource(provider === 'live' ? 'live' : 'sample');
+        setSource(nextState.source as 'live' | 'sample');
       }
     } catch (err) {
       const fallback = await mockFootballApi.getStandings(leagueId);
       setData(fallback);
-      setNotice(provider === 'live' ? getFriendlyMessage(err) : null);
+      setNotice(resolveFallbackNotice(provider, getFriendlyMessage(err)));
       setError(null);
       setSource('sample');
     } finally {

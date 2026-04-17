@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { ApiClientError } from '@/src/lib/api/client';
 import { getFootballDataProvider, getMatchDetails } from '@/src/services/footballApi';
+import { resolveFallbackNotice, resolveNotFoundState } from '@/src/services/footballFallback';
 import { mockFootballApi } from '@/src/services/mockFootballApi';
 import type { MatchDetails } from '@/src/services/footballTypes';
 
@@ -23,13 +24,14 @@ export function useMatchDetails(matchId?: number) {
       setSource(provider === 'live' ? 'live' : 'sample');
     } catch (err) {
       if (err instanceof Error && err.message === 'Match not found') {
-        setError('Match not found');
+        const nextState = resolveNotFoundState(provider);
+        setError(nextState.error);
         setData(null);
-        setSource(provider === 'live' ? 'live' : 'sample');
+        setSource(nextState.source as 'live' | 'sample');
       } else {
         const fallback = await mockFootballApi.getMatchDetails(matchId);
         setData(fallback);
-        setNotice(provider === 'live' ? getFriendlyMessage(err) : null);
+        setNotice(resolveFallbackNotice(provider, getFriendlyMessage(err)));
         setError(null);
         setSource('sample');
       }
