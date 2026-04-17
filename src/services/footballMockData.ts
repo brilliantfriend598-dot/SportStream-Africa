@@ -1,6 +1,6 @@
-import type { MatchDetails, MatchItem, StandingRow } from './types';
+import type { Match, MatchDetails, Standing } from './footballTypes';
 
-export const mockMatches: MatchItem[] = [
+export const mockMatches: Match[] = [
   {
     id: 1,
     league: 'Premier League',
@@ -46,7 +46,7 @@ export const mockMatchDetails: MatchDetails = {
   ],
 };
 
-export const mockStandings: StandingRow[] = [
+export const mockStandings: Standing[] = [
   { rank: 1, team: 'Arsenal', played: 28, won: 20, drawn: 5, lost: 3, points: 65 },
   { rank: 2, team: 'Liverpool', played: 28, won: 19, drawn: 6, lost: 3, points: 63 },
 ];

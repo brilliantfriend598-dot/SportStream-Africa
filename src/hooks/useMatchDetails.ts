@@ -1,33 +1,35 @@
 import { useCallback, useEffect, useState } from 'react';
-import { getMatchDetails } from '@/src/lib/api/football';
 import { ApiClientError } from '@/src/lib/api/client';
-import { mockMatchDetails } from '@/src/lib/api/mock';
-import type { MatchDetails } from '@/src/lib/api/types';
+import { getFootballDataProvider, getMatchDetails } from '@/src/services/footballApi';
+import { mockFootballApi } from '@/src/services/mockFootballApi';
+import type { MatchDetails } from '@/src/services/footballTypes';
 
 export function useMatchDetails(matchId?: number) {
   const [data, setData] = useState<MatchDetails | null>(null);
   const [loading, setLoading] = useState(Boolean(matchId));
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
-  const [source, setSource] = useState<'live' | 'sample'>('live');
+  const [source, setSource] = useState<'live' | 'sample'>('sample');
 
   const refetch = useCallback(async () => {
     if (!matchId) return;
+    const provider = getFootballDataProvider();
     try {
       setLoading(true);
       setError(null);
       setNotice(null);
       const result = await getMatchDetails(matchId);
       setData(result);
-      setSource('live');
+      setSource(provider === 'live' ? 'live' : 'sample');
     } catch (err) {
       if (err instanceof Error && err.message === 'Match not found') {
         setError('Match not found');
         setData(null);
-        setSource('live');
+        setSource(provider === 'live' ? 'live' : 'sample');
       } else {
-        setData({ ...mockMatchDetails, id: matchId });
-        setNotice(getFriendlyMessage(err));
+        const fallback = await mockFootballApi.getMatchDetails(matchId);
+        setData(fallback);
+        setNotice(provider === 'live' ? getFriendlyMessage(err) : null);
         setError(null);
         setSource('sample');
       }

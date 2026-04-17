@@ -1,9 +1,14 @@
 import { DEFAULT_HOME_LEAGUES } from '@/src/constants/leagues';
 import { apiGet } from '@/src/lib/api/client';
 import { apiConfig } from '@/src/lib/api/config';
-import type { ApiResponse } from '@/src/lib/api/types';
 import { mockFootballApi } from './mockFootballApi';
-import type { FootballApi, FootballDataProvider, Match } from './footballTypes';
+import type { FootballApi, FootballDataProvider, Match, MatchDetails, MatchEvent, MatchStat, Standing } from './footballTypes';
+
+type ApiResponse<T> = {
+  results: number;
+  response: T;
+  errors?: unknown;
+};
 
 const DEFAULT_DATE = () => new Date().toISOString().slice(0, 10);
 
@@ -21,6 +26,50 @@ export const liveFootballApi: FootballApi = {
     const results = await Promise.all(requests);
     return results.flatMap((result) => (result.response ?? []).map(mapFixture));
   },
+  async getMatchDetails(matchId: number) {
+    const [fixtureResult, statsResult, eventsResult] = await Promise.all([
+      apiGet<ApiResponse<any[]>>('/fixtures', { id: matchId, timezone: apiConfig.defaultTimezone }),
+      apiGet<ApiResponse<any[]>>('/fixtures/statistics', { fixture: matchId }),
+      apiGet<ApiResponse<any[]>>('/fixtures/events', { fixture: matchId }),
+    ]);
+
+    const fixture = fixtureResult.response?.[0];
+    if (!fixture) {
+      throw new Error('Match not found');
+    }
+
+    return {
+      id: fixture.fixture.id,
+      league: fixture.league.name,
+      home: fixture.teams.home.name,
+      away: fixture.teams.away.name,
+      score:
+        fixture.goals?.home === null || fixture.goals?.away === null
+          ? 'vs'
+          : `${fixture.goals.home} - ${fixture.goals.away}`,
+      status: formatStatus(fixture.fixture.status?.short),
+      venue: fixture.fixture.venue?.name,
+      events: flattenEvents(eventsResult.response),
+      stats: flattenStats(statsResult.response),
+    };
+  },
+  async getStandings(leagueId: number) {
+    const result = await apiGet<ApiResponse<any[]>>('/standings', {
+      league: leagueId,
+      season: apiConfig.defaultSeason,
+    });
+
+    const rows = result.response?.[0]?.league?.standings?.[0] ?? [];
+    return rows.map((row: any) => ({
+      rank: row.rank,
+      team: row.team.name,
+      played: row.all.played,
+      won: row.all.win,
+      drawn: row.all.draw,
+      lost: row.all.lose,
+      points: row.points,
+    }));
+  },
 };
 
 export function getFootballDataProvider(): FootballDataProvider {
@@ -34,6 +83,14 @@ export function getFootballApi(): FootballApi {
 
 export async function getTodayMatches(date?: string): Promise<Match[]> {
   return getFootballApi().getTodayMatches(date);
+}
+
+export async function getMatchDetails(matchId: number): Promise<MatchDetails> {
+  return getFootballApi().getMatchDetails(matchId);
+}
+
+export async function getStandings(leagueId: number): Promise<Standing[]> {
+  return getFootballApi().getStandings(leagueId);
 }
 
 function mapFixture(item: any): Match {
@@ -62,6 +119,23 @@ function formatStatus(raw?: string): string {
   if (['1H', '2H', 'HT', 'LIVE', 'ET', 'BT', 'P'].includes(raw)) return 'LIVE';
   if (['FT', 'AET', 'PEN'].includes(raw)) return 'FT';
   return 'UPCOMING';
+}
+
+function flattenStats(statsBlock: any[] | undefined): MatchStat[] {
+  if (!statsBlock || !statsBlock.length) return [];
+  const homeStats = statsBlock[0]?.statistics ?? [];
+  return homeStats.slice(0, 6).map((stat: any) => ({
+    label: String(stat.type ?? 'Stat'),
+    value: String(stat.value ?? '-'),
+  }));
+}
+
+function flattenEvents(events: any[] | undefined): MatchEvent[] {
+  if (!events || !events.length) return [];
+  return events.slice(0, 12).map((event: any) => ({
+    time: `${event.time?.elapsed ?? ''}'`,
+    detail: `${event.type ?? ''} ${event.detail ?? ''}`.trim(),
+  }));
 }
 
 function formatTime(timestampSeconds?: number): string {

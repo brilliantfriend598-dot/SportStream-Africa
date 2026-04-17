@@ -3,7 +3,7 @@ import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
 import { DataSourceBadge } from '@/components/DataSourceBadge';
 import { useMatchDetails } from '@/src/hooks/useMatchDetails';
-import type { MatchEvent, MatchStat } from '@/src/lib/api/types';
+import type { MatchEvent, MatchStat } from '@/src/services/footballTypes';
 
 export default function MatchDetailsScreen() {
   const params = useLocalSearchParams();

@@ -17,6 +17,28 @@ export type Match = {
   score: string;
 };
 
+export type MatchStat = {
+  label: string;
+  value: string;
+};
+
+export type MatchEvent = {
+  time: string;
+  detail: string;
+};
+
+export type MatchDetails = {
+  id: number;
+  league: string;
+  home: string;
+  away: string;
+  score: string;
+  status: MatchStatus;
+  venue?: string;
+  events: MatchEvent[];
+  stats: MatchStat[];
+};
+
 export type Standing = {
   rank: number;
   team: string;
@@ -31,4 +53,6 @@ export type FootballDataProvider = 'mock' | 'live';
 
 export type FootballApi = {
   getTodayMatches(date?: string): Promise<Match[]>;
+  getMatchDetails(matchId: number): Promise<MatchDetails>;
+  getStandings(leagueId: number): Promise<Standing[]>;
 };
