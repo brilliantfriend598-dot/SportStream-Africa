@@ -8,7 +8,7 @@
     "dev-client": "expo start --dev-client",
     "android": "expo run:android",
     "ios": "expo run:ios",
-    "test:football": "node tests/footballProvider.test.js",
+    "test:football": "node tests/footballProvider.test.js && node tests/footballFallback.test.js",
     "web": "expo start --web",
     "proxy": "node proxy-server.js",
     "proxy:hosted": "vercel --prod",
