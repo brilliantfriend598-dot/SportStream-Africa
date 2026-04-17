@@ -1,8 +1,13 @@
+import { useRouter } from 'expo-router';
 import { Text, TouchableOpacity, View } from 'react-native';
+import { useAuth } from '@/src/context/AuthContext';
 import { theme } from '../../constants/theme';
 import { PreferenceRow } from '../../components/PreferenceRow';
 
 export default function ProfileScreen() {
+  const router = useRouter();
+  const { user, isLoading, isAuthenticated, signOut, provider } = useAuth();
+
   return (
     <View style={{ flex: 1, backgroundColor: theme.colors.bg, padding: 16, paddingTop: 20 }}>
       <View
@@ -27,9 +32,15 @@ export default function ProfileScreen() {
           }}
         />
         <View style={{ flex: 1 }}>
-          <Text style={{ color: theme.colors.text, fontSize: 20, fontWeight: '800' }}>Welcome back</Text>
+          <Text style={{ color: theme.colors.text, fontSize: 20, fontWeight: '800' }}>
+            {isAuthenticated ? user?.displayName || user?.email || 'Welcome back' : 'Welcome back'}
+          </Text>
           <Text style={{ color: theme.colors.muted, fontSize: 14, marginTop: 6 }}>
-            Set your preferences and favorite clubs.
+            {isAuthenticated
+              ? `Signed in with ${provider}.`
+              : isLoading
+                ? 'Checking your account...'
+                : 'Set your preferences and favorite clubs.'}
           </Text>
         </View>
       </View>
@@ -44,6 +55,7 @@ export default function ProfileScreen() {
 
       <View style={{ flexDirection: 'row', gap: 12, marginTop: 24 }}>
         <TouchableOpacity
+          onPress={() => router.push('/login')}
           style={{
             flex: 1,
             backgroundColor: theme.colors.gold,
@@ -52,10 +64,16 @@ export default function ProfileScreen() {
             alignItems: 'center',
           }}
         >
-          <Text style={{ color: '#111111', fontSize: 15, fontWeight: '800' }}>Log In</Text>
+          <Text style={{ color: '#111111', fontSize: 15, fontWeight: '800' }}>
+            {isAuthenticated ? 'Manage Account' : 'Log In'}
+          </Text>
         </TouchableOpacity>
 
         <TouchableOpacity
+          onPress={() => {
+            void signOut();
+          }}
+          disabled={!isAuthenticated}
           style={{
             flex: 1,
             backgroundColor: theme.colors.panel,
@@ -64,6 +82,7 @@ export default function ProfileScreen() {
             borderRadius: 18,
             paddingVertical: 14,
             alignItems: 'center',
+            opacity: isAuthenticated ? 1 : 0.5,
           }}
         >
           <Text style={{ color: theme.colors.text, fontSize: 15, fontWeight: '700' }}>Log Out</Text>

@@ -3,6 +3,8 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { theme } from '../../constants/theme';
+import { LEAGUES } from '../../src/constants/leagues';
+import { useStandings } from '../../src/hooks/useStandings';
 import { useTodayMatches } from '../../src/hooks/useTodayMatches';
 import { DataSourceBadge } from '../../components/DataSourceBadge';
 import { MatchCard } from '../../components/MatchCard';
@@ -11,6 +13,12 @@ import { SectionHeader } from '../../components/SectionHeader';
 export default function HomeScreen() {
   const router = useRouter();
   const { data: matches, loading, error, notice, source, refetch } = useTodayMatches();
+  const {
+    data: standings,
+    loading: standingsLoading,
+    notice: standingsNotice,
+    source: standingsSource,
+  } = useStandings(LEAGUES.PSL);
 
   return (
     <ScrollView
@@ -38,19 +46,37 @@ export default function HomeScreen() {
             The Pulse of African Football
           </Text>
         </View>
-        <View
-          style={{
-            width: 42,
-            height: 42,
-            borderRadius: 16,
-            borderWidth: 1,
-            borderColor: theme.colors.border,
-            backgroundColor: theme.colors.panel,
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-        >
-          <Ionicons name="notifications" size={18} color={theme.colors.text} />
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+          <TouchableOpacity
+            onPress={() => router.push('/login')}
+            style={{
+              minWidth: 70,
+              height: 42,
+              borderRadius: 16,
+              borderWidth: 1,
+              borderColor: theme.colors.border,
+              backgroundColor: theme.colors.panel,
+              alignItems: 'center',
+              justifyContent: 'center',
+              paddingHorizontal: 12,
+            }}
+          >
+            <Text style={{ color: theme.colors.text, fontSize: 13, fontWeight: '700' }}>Log In</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={{
+              width: 42,
+              height: 42,
+              borderRadius: 16,
+              borderWidth: 1,
+              borderColor: theme.colors.border,
+              backgroundColor: theme.colors.panel,
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <Ionicons name="notifications" size={18} color={theme.colors.text} />
+          </TouchableOpacity>
         </View>
       </View>
 
@@ -128,6 +154,45 @@ export default function HomeScreen() {
         />
       </View>
 
+      <SectionHeader title="Quick Access" action="Open profile" onPress={() => router.push('/profile')} />
+      <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 12, marginBottom: 8 }}>
+        {[
+          { label: 'Fixtures', icon: 'calendar', route: '/fixtures' },
+          { label: 'Standings', icon: 'stats-chart', route: '/standings' },
+          { label: 'News', icon: 'newspaper', route: '/news' },
+          { label: 'Watch', icon: 'play-circle', route: '/watch' },
+          { label: 'Profile', icon: 'person', route: '/profile' },
+        ].map((item) => (
+          <TouchableOpacity
+            key={item.label}
+            onPress={() => router.push(item.route as '/fixtures' | '/standings' | '/news' | '/watch' | '/profile')}
+            style={{
+              width: '48%',
+              backgroundColor: theme.colors.panel,
+              borderColor: theme.colors.border,
+              borderWidth: 1,
+              borderRadius: 20,
+              padding: 16,
+              gap: 10,
+            }}
+          >
+            <View
+              style={{
+                width: 40,
+                height: 40,
+                borderRadius: 14,
+                backgroundColor: '#1B1B1B',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <Ionicons name={item.icon as 'calendar' | 'stats-chart' | 'newspaper' | 'play-circle' | 'person'} size={18} color={theme.colors.gold} />
+            </View>
+            <Text style={{ color: theme.colors.text, fontSize: 15, fontWeight: '700' }}>{item.label}</Text>
+          </TouchableOpacity>
+        ))}
+      </View>
+
       <SectionHeader title="Today's Matches" action="All fixtures" onPress={() => router.push('/fixtures')} />
       <View style={{ marginBottom: 12 }}>
         <DataSourceBadge source={source} />
@@ -172,6 +237,64 @@ export default function HomeScreen() {
           />
         ))
       )}
+
+      <SectionHeader title="Table Watch" action="Full table" onPress={() => router.push('/standings')} />
+      <View style={{ marginBottom: 12 }}>
+        <DataSourceBadge source={standingsSource} />
+      </View>
+      {standingsNotice ? (
+        <View
+          style={{
+            backgroundColor: '#1A1607',
+            borderColor: theme.colors.gold,
+            borderWidth: 1,
+            borderRadius: 16,
+            padding: 12,
+            marginBottom: 12,
+          }}
+        >
+          <Text style={{ color: theme.colors.gold, fontSize: 12, lineHeight: 18 }}>{standingsNotice}</Text>
+        </View>
+      ) : null}
+      <View
+        style={{
+          backgroundColor: theme.colors.panel,
+          borderColor: theme.colors.border,
+          borderWidth: 1,
+          borderRadius: 24,
+          padding: 16,
+          gap: 12,
+        }}
+      >
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+          <Text style={{ color: theme.colors.text, fontSize: 16, fontWeight: '700' }}>PSL top teams</Text>
+          <Text style={{ color: theme.colors.muted, fontSize: 12 }}>Points</Text>
+        </View>
+
+        {standingsLoading ? (
+          <Text style={{ color: theme.colors.muted }}>Loading standings...</Text>
+        ) : (
+          standings.slice(0, 3).map((row) => (
+            <View
+              key={`${row.rank}-${row.team}`}
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                paddingVertical: 6,
+                borderTopWidth: 1,
+                borderTopColor: theme.colors.border,
+              }}
+            >
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+                <Text style={{ color: theme.colors.gold, fontWeight: '700', minWidth: 18 }}>{row.rank}</Text>
+                <Text style={{ color: theme.colors.text }}>{row.team}</Text>
+              </View>
+              <Text style={{ color: theme.colors.text, fontWeight: '700' }}>{row.points}</Text>
+            </View>
+          ))
+        )}
+      </View>
 
       <SectionHeader title="Trending" />
       <View style={{ flexDirection: 'row', gap: 12 }}>

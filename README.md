@@ -29,6 +29,8 @@ This project reads:
 - `EXPO_PUBLIC_FOOTBALL_API_KEY`
 - `EXPO_PUBLIC_API_PROXY_URL`
 - `EXPO_PUBLIC_FOOTBALL_DATA_PROVIDER`
+- `EXPO_PUBLIC_AUTH_PROVIDER`
+- `EXPO_PUBLIC_FIREBASE_API_KEY`
 - `EXPO_PUBLIC_DEFAULT_SEASON`
 - `EXPO_PUBLIC_DEFAULT_TIMEZONE`
 - `FOOTBALL_API_BASE_URL`
@@ -51,6 +53,25 @@ The current hooks that use this provider layer are:
 - `useStandings`
 
 When `live` is enabled, the hooks still fall back to sample data if the API returns nothing or the request fails, so the existing UI keeps rendering safely.
+
+## Auth provider switch
+
+The auth layer now follows the same provider pattern as football data:
+
+- `EXPO_PUBLIC_AUTH_PROVIDER=mock` keeps login in demo mode
+- `EXPO_PUBLIC_AUTH_PROVIDER=firebase` enables real Firebase email/password auth
+
+To enable Firebase auth:
+
+1. Turn on Email/Password in your Firebase Authentication dashboard.
+2. Add your Firebase Web API key to `.env` as `EXPO_PUBLIC_FIREBASE_API_KEY=...`.
+3. Set `EXPO_PUBLIC_AUTH_PROVIDER=firebase`.
+4. Restart Expo or rebuild the app.
+
+Mock mode still works without Firebase setup and uses:
+
+- email: `demo@sportstream.africa`
+- password: `password123`
 
 ## Security note
 
@@ -82,7 +103,6 @@ There is also a step-by-step guide in [HOSTED_BACKEND_SETUP.md](C:/Users/Botsh/D
 ## Next steps
 
 - Move API requests behind a backend proxy
-- Connect Firebase auth
 - Add push notifications
 - Replace placeholder visuals with real logos and thumbnails
 
