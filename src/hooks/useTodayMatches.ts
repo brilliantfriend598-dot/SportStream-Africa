@@ -1,33 +1,37 @@
 import { useCallback, useEffect, useState } from 'react';
-import { getTodayMatches } from '@/src/lib/api/football';
 import { ApiClientError } from '@/src/lib/api/client';
-import { mockMatches } from '@/src/lib/api/mock';
-import type { MatchItem } from '@/src/lib/api/types';
+import { getFootballDataProvider, getTodayMatches } from '@/src/services/footballApi';
+import { mockFootballApi } from '@/src/services/mockFootballApi';
+import type { Match } from '@/src/services/footballTypes';
 
 export function useTodayMatches(date?: string) {
-  const [data, setData] = useState<MatchItem[]>([]);
+  const [data, setData] = useState<Match[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
-  const [source, setSource] = useState<'live' | 'sample'>('live');
+  const [source, setSource] = useState<'live' | 'sample'>('sample');
 
   const refetch = useCallback(async () => {
+    const provider = getFootballDataProvider();
+
     try {
       setLoading(true);
       setError(null);
       setNotice(null);
       const result = await getTodayMatches(date);
       if (result.length === 0) {
-        setData(mockMatches);
-        setNotice(getEmptyStateMessage(date));
+        const fallbackMatches = await mockFootballApi.getTodayMatches(date);
+        setData(fallbackMatches);
+        setNotice(provider === 'live' ? getEmptyStateMessage(date) : null);
         setSource('sample');
       } else {
         setData(result);
-        setSource('live');
+        setSource(provider === 'live' ? 'live' : 'sample');
       }
     } catch (err) {
-      setData(mockMatches);
-      setNotice(getFriendlyMessage(err, 'matches'));
+      const fallbackMatches = await mockFootballApi.getTodayMatches(date);
+      setData(fallbackMatches);
+      setNotice(provider === 'live' ? getFriendlyMessage(err, 'matches') : null);
       setError(null);
       setSource('sample');
     } finally {
