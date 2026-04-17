@@ -28,6 +28,7 @@ This project reads:
 - `EXPO_PUBLIC_FOOTBALL_API_BASE_URL`
 - `EXPO_PUBLIC_FOOTBALL_API_KEY`
 - `EXPO_PUBLIC_API_PROXY_URL`
+- `EXPO_PUBLIC_FOOTBALL_DATA_PROVIDER`
 - `EXPO_PUBLIC_DEFAULT_SEASON`
 - `EXPO_PUBLIC_DEFAULT_TIMEZONE`
 - `FOOTBALL_API_BASE_URL`
@@ -35,6 +36,21 @@ This project reads:
 
 If the API is unavailable or the credentials are missing, the app falls back to mock match and standings data so the UI still renders.
 The local proxy also exposes `/health` so you can verify that your phone can reach it over Wi-Fi.
+
+## Football provider switch
+
+The football data layer is provider-swappable through `src/services/`.
+
+- `EXPO_PUBLIC_FOOTBALL_DATA_PROVIDER=mock` uses sample football data by default.
+- `EXPO_PUBLIC_FOOTBALL_DATA_PROVIDER=live` enables the live football provider.
+
+The current hooks that use this provider layer are:
+
+- `useTodayMatches`
+- `useMatchDetails`
+- `useStandings`
+
+When `live` is enabled, the hooks still fall back to sample data if the API returns nothing or the request fails, so the existing UI keeps rendering safely.
 
 ## Security note
 

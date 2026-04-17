@@ -3,6 +3,7 @@ import { apiGet } from '@/src/lib/api/client';
 import { apiConfig } from '@/src/lib/api/config';
 import { mockFootballApi } from './mockFootballApi';
 import type { FootballApi, FootballDataProvider, Match, MatchDetails, MatchEvent, MatchStat, Standing } from './footballTypes';
+import { normalizeFootballDataProvider } from './footballProvider';
 
 type ApiResponse<T> = {
   results: number;
@@ -73,8 +74,7 @@ export const liveFootballApi: FootballApi = {
 };
 
 export function getFootballDataProvider(): FootballDataProvider {
-  const value = process.env.EXPO_PUBLIC_FOOTBALL_DATA_PROVIDER?.toLowerCase();
-  return value === 'live' ? 'live' : 'mock';
+  return normalizeFootballDataProvider(process.env.EXPO_PUBLIC_FOOTBALL_DATA_PROVIDER) as FootballDataProvider;
 }
 
 export function getFootballApi(): FootballApi {
