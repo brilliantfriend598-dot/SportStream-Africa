@@ -24,6 +24,15 @@ export type VideoItem = {
   tag: string;
 };
 
+export type NotificationItem = {
+  id: string;
+  title: string;
+  message: string;
+  time: string;
+  type: 'match' | 'news' | 'account';
+  unread?: boolean;
+};
+
 export const matches: Match[] = [
   {
     id: '1',
@@ -100,4 +109,30 @@ export const videoItems: VideoItem[] = [
   { id: '1', title: 'Top 5 goals this week', duration: '02:18', tag: 'Highlights' },
   { id: '2', title: 'Matchday tactical breakdown', duration: '03:44', tag: 'Analysis' },
   { id: '3', title: 'PSL weekend recap', duration: '01:56', tag: 'Africa' },
+];
+
+export const notificationItems: NotificationItem[] = [
+  {
+    id: '1',
+    title: 'Kickoff reminder',
+    message: 'Sundowns vs Chiefs starts in 25 minutes. Open Fixtures to follow the match.',
+    time: 'Now',
+    type: 'match',
+    unread: true,
+  },
+  {
+    id: '2',
+    title: 'Top story update',
+    message: 'The title-race story has been updated with a late winner and new standings context.',
+    time: '18 min ago',
+    type: 'news',
+    unread: true,
+  },
+  {
+    id: '3',
+    title: 'Session restored',
+    message: 'Your account stayed signed in after restart, which is exactly what testers should verify.',
+    time: 'Today',
+    type: 'account',
+  },
 ];

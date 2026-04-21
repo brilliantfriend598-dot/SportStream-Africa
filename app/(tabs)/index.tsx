@@ -8,7 +8,9 @@ import { useStandings } from '../../src/hooks/useStandings';
 import { useTodayMatches } from '../../src/hooks/useTodayMatches';
 import { DataSourceBadge } from '../../components/DataSourceBadge';
 import { MatchCard } from '../../components/MatchCard';
+import { NewsCard } from '../../components/NewsCard';
 import { SectionHeader } from '../../components/SectionHeader';
+import { newsItems } from '../../data/mockData';
 
 export default function HomeScreen() {
   const router = useRouter();
@@ -64,6 +66,7 @@ export default function HomeScreen() {
             <Text style={{ color: theme.colors.text, fontSize: 13, fontWeight: '700' }}>Log In</Text>
           </TouchableOpacity>
           <TouchableOpacity
+            onPress={() => router.push('/notifications')}
             style={{
               width: 42,
               height: 42,
@@ -162,10 +165,15 @@ export default function HomeScreen() {
           { label: 'News', icon: 'newspaper', route: '/news' },
           { label: 'Watch', icon: 'play-circle', route: '/watch' },
           { label: 'Profile', icon: 'person', route: '/profile' },
+          { label: 'Testing', icon: 'flask', route: '/testing' },
         ].map((item) => (
           <TouchableOpacity
             key={item.label}
-            onPress={() => router.push(item.route as '/fixtures' | '/standings' | '/news' | '/watch' | '/profile')}
+            onPress={() =>
+              router.push(
+                item.route as '/fixtures' | '/standings' | '/news' | '/watch' | '/profile' | '/testing',
+              )
+            }
             style={{
               width: '48%',
               backgroundColor: theme.colors.panel,
@@ -186,7 +194,11 @@ export default function HomeScreen() {
                 justifyContent: 'center',
               }}
             >
-              <Ionicons name={item.icon as 'calendar' | 'stats-chart' | 'newspaper' | 'play-circle' | 'person'} size={18} color={theme.colors.gold} />
+              <Ionicons
+                name={item.icon as 'calendar' | 'stats-chart' | 'newspaper' | 'play-circle' | 'person' | 'flask'}
+                size={18}
+                color={theme.colors.gold}
+              />
             </View>
             <Text style={{ color: theme.colors.text, fontSize: 15, fontWeight: '700' }}>{item.label}</Text>
           </TouchableOpacity>
@@ -353,10 +365,8 @@ export default function HomeScreen() {
         </View>
       </View>
 
-      <SectionHeader title="Top News" />
-      <View style={{ alignItems: 'center', paddingVertical: 20 }}>
-        <Text style={{ color: theme.colors.muted }}>News feed coming soon</Text>
-      </View>
+      <SectionHeader title="Top News" action="Open news" onPress={() => router.push('/news')} />
+      <NewsCard item={newsItems[0]} />
     </ScrollView>
   );
 }

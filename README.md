@@ -21,6 +21,8 @@ This is an Expo Router starter for the SportStream Africa mobile app.
 7. Start the app with `npx expo start`.
 8. For physical phone testing, set `EXPO_PUBLIC_API_PROXY_URL` to the LAN URL printed by the proxy, not `localhost`.
 
+Once the app is running, open the new `Testing` shortcut from Home to confirm build mode, auth mode, and data-source health before sharing the build with testers.
+
 ## Environment variables
 
 This project reads:
