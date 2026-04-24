@@ -1,7 +1,9 @@
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
+import { Platform } from 'react-native';
 import { AuthProvider } from '@/src/context/AuthContext';
 import { theme } from '../constants/theme';
+import { Analytics } from '@vercel/analytics/react';
 
 export default function RootLayout() {
   return (
@@ -16,6 +18,7 @@ export default function RootLayout() {
           }}
         />
       </Stack>
+      {Platform.OS === 'web' && <Analytics />}
     </AuthProvider>
   );
 }
