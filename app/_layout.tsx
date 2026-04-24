@@ -2,6 +2,7 @@ import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { AuthProvider } from '@/src/context/AuthContext';
 import { theme } from '../constants/theme';
+import { SpeedInsights } from '@vercel/speed-insights/react';
 
 export default function RootLayout() {
   return (
@@ -16,6 +17,7 @@ export default function RootLayout() {
           }}
         />
       </Stack>
+      <SpeedInsights />
     </AuthProvider>
   );
 }
