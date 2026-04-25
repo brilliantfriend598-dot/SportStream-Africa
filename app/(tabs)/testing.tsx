@@ -19,7 +19,13 @@ const APP_NAME = Constants.expoConfig?.name ?? 'SportStream Africa';
 export default function TestingScreen() {
   const router = useRouter();
   const { provider: authProvider, user, isAuthenticated, isLoading: authLoading } = useAuth();
-  const { data: matches, notice: matchesNotice, source: matchesSource, refetch: refetchMatches } = useTodayMatches();
+  const {
+    data: matches,
+    notice: matchesNotice,
+    source: matchesSource,
+    diagnostics: matchDiagnostics,
+    refetch: refetchMatches,
+  } = useTodayMatches();
   const {
     data: standings,
     notice: standingsNotice,
@@ -93,6 +99,7 @@ export default function TestingScreen() {
           source={matchesSource}
           summary={`${matches.length} matches loaded`}
           notice={matchesNotice}
+          diagnostics={matchDiagnostics}
         />
         <HealthCard
           title="PSL standings"
@@ -212,11 +219,18 @@ function HealthCard({
   source,
   summary,
   notice,
+  diagnostics,
 }: {
   title: string;
   source: 'live' | 'sample';
   summary: string;
   notice: string | null;
+  diagnostics?: Array<{
+    leagueId: number;
+    status: 'success' | 'error';
+    matchCount: number;
+    message?: string;
+  }>;
 }) {
   return (
     <View
@@ -233,6 +247,15 @@ function HealthCard({
         <DataSourceBadge source={source} />
       </View>
       <Text style={{ color: theme.colors.muted, fontSize: 13, marginTop: 12 }}>{summary}</Text>
+      {diagnostics?.length ? (
+        <View style={{ marginTop: 12, gap: 6 }}>
+          {diagnostics.map((item) => (
+            <Text key={`${title}-${item.leagueId}-${item.status}`} style={{ color: theme.colors.muted, fontSize: 12, lineHeight: 18 }}>
+              League {item.leagueId}: {item.status === 'success' ? `${item.matchCount} match(es)` : item.message || 'Request failed'}
+            </Text>
+          ))}
+        </View>
+      ) : null}
       {notice ? (
         <View
           style={{

@@ -49,6 +49,13 @@ export type Standing = {
   points: number;
 };
 
+export type LeagueFetchDiagnostic = {
+  leagueId: number;
+  status: 'success' | 'error';
+  matchCount: number;
+  message?: string;
+};
+
 export type FootballDataProvider = 'mock' | 'live';
 
 export type FootballApi = {

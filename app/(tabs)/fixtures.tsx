@@ -5,7 +5,7 @@ import { MatchCard } from '../../components/MatchCard';
 import { useTodayMatches } from '../../src/hooks/useTodayMatches';
 
 export default function FixturesScreen() {
-  const { data, loading, error, notice, source, refetch } = useTodayMatches();
+  const { data, loading, error, notice, source, diagnostics, refetch } = useTodayMatches();
 
   if (loading) {
     return (
@@ -73,6 +73,27 @@ export default function FixturesScreen() {
           }}
         >
           <Text style={{ color: theme.colors.gold, fontSize: 12, lineHeight: 18 }}>{notice}</Text>
+        </View>
+      ) : null}
+
+      {diagnostics.length ? (
+        <View
+          style={{
+            backgroundColor: theme.colors.panel,
+            borderColor: theme.colors.border,
+            borderWidth: 1,
+            borderRadius: 16,
+            padding: 12,
+            marginBottom: 16,
+            gap: 8,
+          }}
+        >
+          <Text style={{ color: theme.colors.text, fontSize: 13, fontWeight: '700' }}>Live request diagnostics</Text>
+          {diagnostics.map((item) => (
+            <Text key={`${item.leagueId}-${item.status}`} style={{ color: theme.colors.muted, fontSize: 12, lineHeight: 18 }}>
+              League {item.leagueId}: {item.status === 'success' ? `${item.matchCount} match(es)` : item.message || 'Request failed'}
+            </Text>
+          ))}
         </View>
       ) : null}
 

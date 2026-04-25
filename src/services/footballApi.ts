@@ -2,7 +2,16 @@ import { DEFAULT_HOME_LEAGUES } from '@/src/constants/leagues';
 import { apiGet } from '@/src/lib/api/client';
 import { apiConfig } from '@/src/lib/api/config';
 import { mockFootballApi } from './mockFootballApi';
-import type { FootballApi, FootballDataProvider, Match, MatchDetails, MatchEvent, MatchStat, Standing } from './footballTypes';
+import type {
+  FootballApi,
+  FootballDataProvider,
+  LeagueFetchDiagnostic,
+  Match,
+  MatchDetails,
+  MatchEvent,
+  MatchStat,
+  Standing,
+} from './footballTypes';
 import { normalizeFootballDataProvider } from './footballProvider';
 
 type ApiResponse<T> = {
@@ -12,21 +21,48 @@ type ApiResponse<T> = {
 };
 
 const DEFAULT_DATE = () => new Date().toISOString().slice(0, 10);
+let lastTodayMatchesDiagnostics: LeagueFetchDiagnostic[] = [];
 
 export const liveFootballApi: FootballApi = {
   async getTodayMatches(date = DEFAULT_DATE()) {
-    const requests = DEFAULT_HOME_LEAGUES.map((league) =>
-      apiGet<ApiResponse<any[]>>('/fixtures', {
+    const requests = DEFAULT_HOME_LEAGUES.map(async (league) => {
+      const result = await apiGet<ApiResponse<any[]>>('/fixtures', {
         date,
         league,
         season: apiConfig.defaultSeason,
         timezone: apiConfig.defaultTimezone,
-      }),
-    );
+      });
+
+      return {
+        league,
+        result,
+      };
+    });
 
     const settledResults = await Promise.allSettled(requests);
-    const successfulResults = settledResults.filter(isFulfilled);
+    const successfulResults = settledResults.filter(isFulfilled).map((result) => result.value);
     const failedResults = settledResults.filter(isRejected);
+
+    lastTodayMatchesDiagnostics = settledResults
+      .map((result, index) => {
+        const leagueId = DEFAULT_HOME_LEAGUES[index] ?? -1;
+
+        if (result.status === 'fulfilled') {
+          return {
+            leagueId,
+            status: 'success' as const,
+            matchCount: result.value.result.response?.length ?? 0,
+          };
+        }
+
+        return {
+          leagueId,
+          status: 'error' as const,
+          matchCount: 0,
+          message: getDiagnosticMessage(result.reason),
+        };
+      })
+      .sort((a, b) => a.leagueId - b.leagueId);
 
     if (!successfulResults.length && failedResults.length) {
       throw failedResults[0].reason;
@@ -38,7 +74,7 @@ export const liveFootballApi: FootballApi = {
       );
     }
 
-    return successfulResults.flatMap((result) => (result.value.response ?? []).map(mapFixture));
+    return successfulResults.flatMap(({ result }) => (result.response ?? []).map(mapFixture));
   },
   async getMatchDetails(matchId: number) {
     const [fixtureResult, statsResult, eventsResult] = await Promise.all([
@@ -98,8 +134,20 @@ function isRejected(
   return result.status === 'rejected';
 }
 
+function getDiagnosticMessage(reason: unknown) {
+  if (reason instanceof Error) {
+    return reason.message;
+  }
+
+  return 'Unknown request failure.';
+}
+
 export function getFootballDataProvider(): FootballDataProvider {
   return normalizeFootballDataProvider(process.env.EXPO_PUBLIC_FOOTBALL_DATA_PROVIDER) as FootballDataProvider;
+}
+
+export function getLastTodayMatchesDiagnostics(): LeagueFetchDiagnostic[] {
+  return lastTodayMatchesDiagnostics.map((item) => ({ ...item }));
 }
 
 export function getFootballApi(): FootballApi {

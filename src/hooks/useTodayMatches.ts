@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useState } from 'react';
 import { ApiClientError } from '@/src/lib/api/client';
-import { getFootballDataProvider, getTodayMatches } from '@/src/services/footballApi';
+import { getFootballDataProvider, getLastTodayMatchesDiagnostics, getTodayMatches } from '@/src/services/footballApi';
 import { resolveFallbackNotice, resolveListFetchState } from '@/src/services/footballFallback';
 import { mockFootballApi } from '@/src/services/mockFootballApi';
-import type { Match } from '@/src/services/footballTypes';
+import type { LeagueFetchDiagnostic, Match } from '@/src/services/footballTypes';
 
 export function useTodayMatches(date?: string) {
   const [data, setData] = useState<Match[]>([]);
@@ -11,6 +11,7 @@ export function useTodayMatches(date?: string) {
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const [source, setSource] = useState<'live' | 'sample'>('sample');
+  const [diagnostics, setDiagnostics] = useState<LeagueFetchDiagnostic[]>([]);
 
   const refetch = useCallback(async () => {
     const provider = getFootballDataProvider();
@@ -20,6 +21,7 @@ export function useTodayMatches(date?: string) {
       setError(null);
       setNotice(null);
       const result = await getTodayMatches(date);
+      setDiagnostics(getLastTodayMatchesDiagnostics());
       if (result.length === 0) {
         const fallbackMatches = await mockFootballApi.getTodayMatches(date);
         const nextState = resolveListFetchState(provider, false, getEmptyStateMessage(date), null);
@@ -34,6 +36,7 @@ export function useTodayMatches(date?: string) {
     } catch (err) {
       const fallbackMatches = await mockFootballApi.getTodayMatches(date);
       setData(fallbackMatches);
+      setDiagnostics(getLastTodayMatchesDiagnostics());
       setNotice(resolveFallbackNotice(provider, getFriendlyMessage(err, 'matches')));
       setError(null);
       setSource('sample');
@@ -46,7 +49,7 @@ export function useTodayMatches(date?: string) {
     refetch();
   }, [refetch]);
 
-  return { data, loading, error, notice, source, refetch };
+  return { data, loading, error, notice, source, diagnostics, refetch };
 }
 
 function getFriendlyMessage(error: unknown, subject: string) {
