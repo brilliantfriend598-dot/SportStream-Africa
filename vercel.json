@@ -1,14 +1,7 @@
 {
-  "version": 2,
-  "functions": {
-    "api/index.js": {
-      "runtime": "nodejs20.x"
-    }
-  },
-  "routes": [
-    {
-      "src": "/(health|fixtures|fixtures/statistics|fixtures/events|standings)(.*)",
-      "dest": "/api/index.js"
-    }
-  ]
-}
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": null,
+  "buildCommand": "npx expo export -p web",
+  "outputDirectory": "dist",
+  "installCommand": "npm install --legacy-peer-deps"
+} 

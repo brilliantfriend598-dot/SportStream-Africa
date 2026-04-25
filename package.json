@@ -10,6 +10,7 @@
     "ios": "expo run:ios",
     "test:football": "node tests/footballProvider.test.js && node tests/footballFallback.test.js",
     "web": "expo start --web",
+    "build": "expo export -p web",
     "proxy": "node proxy-server.js",
     "proxy:hosted": "vercel --prod",
     "reset": "expo start -c"
