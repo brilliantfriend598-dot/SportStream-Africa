@@ -24,8 +24,21 @@ export const liveFootballApi: FootballApi = {
       }),
     );
 
-    const results = await Promise.all(requests);
-    return results.flatMap((result) => (result.response ?? []).map(mapFixture));
+    const settledResults = await Promise.allSettled(requests);
+    const successfulResults = settledResults.filter(isFulfilled);
+    const failedResults = settledResults.filter(isRejected);
+
+    if (!successfulResults.length && failedResults.length) {
+      throw failedResults[0].reason;
+    }
+
+    if (failedResults.length) {
+      console.warn(
+        `Live fixtures loaded with partial results. ${failedResults.length} league request(s) failed.`,
+      );
+    }
+
+    return successfulResults.flatMap((result) => (result.value.response ?? []).map(mapFixture));
   },
   async getMatchDetails(matchId: number) {
     const [fixtureResult, statsResult, eventsResult] = await Promise.all([
@@ -72,6 +85,18 @@ export const liveFootballApi: FootballApi = {
     }));
   },
 };
+
+function isFulfilled<T>(
+  result: PromiseSettledResult<T>,
+): result is PromiseFulfilledResult<T> {
+  return result.status === 'fulfilled';
+}
+
+function isRejected(
+  result: PromiseSettledResult<unknown>,
+): result is PromiseRejectedResult {
+  return result.status === 'rejected';
+}
 
 export function getFootballDataProvider(): FootballDataProvider {
   return normalizeFootballDataProvider(process.env.EXPO_PUBLIC_FOOTBALL_DATA_PROVIDER) as FootballDataProvider;
