@@ -9,11 +9,19 @@
       "destination": "/api/index.js"
     },
     {
-      "source": "/fixtures/:path*",
+      "source": "/fixtures",
       "destination": "/api/index.js"
     },
     {
-      "source": "/standings/:path*",
+      "source": "/fixtures/statistics",
+      "destination": "/api/index.js"
+    },
+    {
+      "source": "/fixtures/events",
+      "destination": "/api/index.js"
+    },
+    {
+      "source": "/standings",
       "destination": "/api/index.js"
     }
   ]
