@@ -108,6 +108,7 @@ function handleProxyRequest(req, res, options = {}) {
   }
 
   const requestUrl = new URL(req.url, `http://${req.headers.host || 'localhost'}`);
+  requestUrl.searchParams.delete('path');
 
   if (requestUrl.pathname === '/health') {
     sendJson(res, 200, {
