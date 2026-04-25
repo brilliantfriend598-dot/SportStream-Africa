@@ -20,61 +20,57 @@ type ApiResponse<T> = {
   errors?: unknown;
 };
 
-const DEFAULT_DATE = () => new Date().toISOString().slice(0, 10);
+type TodayMatchesMode = 'today' | 'upcoming';
+
+const DEFAULT_DATE = () => formatDateInTimezone(apiConfig.defaultTimezone);
 let lastTodayMatchesDiagnostics: LeagueFetchDiagnostic[] = [];
+let lastTodayMatchesMode: TodayMatchesMode = 'today';
 
 export const liveFootballApi: FootballApi = {
   async getTodayMatches(date = DEFAULT_DATE()) {
-    const requests = DEFAULT_HOME_LEAGUES.map(async (league) => {
-      const result = await apiGet<ApiResponse<any[]>>('/fixtures', {
-        date,
-        league,
-        season: apiConfig.defaultSeason,
-        timezone: apiConfig.defaultTimezone,
-      });
-
-      return {
-        league,
-        result,
-      };
+    const todayResults = await fetchFixturesByLeague({
+      date,
+      season: apiConfig.defaultSeason,
+      timezone: apiConfig.defaultTimezone,
     });
 
-    const settledResults = await Promise.allSettled(requests);
-    const successfulResults = settledResults.filter(isFulfilled).map((result) => result.value);
-    const failedResults = settledResults.filter(isRejected);
+    lastTodayMatchesDiagnostics = todayResults.diagnostics;
+    lastTodayMatchesMode = 'today';
 
-    lastTodayMatchesDiagnostics = settledResults
-      .map((result, index) => {
-        const leagueId = DEFAULT_HOME_LEAGUES[index] ?? -1;
-
-        if (result.status === 'fulfilled') {
-          return {
-            leagueId,
-            status: 'success' as const,
-            matchCount: result.value.result.response?.length ?? 0,
-          };
-        }
-
-        return {
-          leagueId,
-          status: 'error' as const,
-          matchCount: 0,
-          message: getDiagnosticMessage(result.reason),
-        };
-      })
-      .sort((a, b) => a.leagueId - b.leagueId);
-
-    if (!successfulResults.length && failedResults.length) {
-      throw failedResults[0].reason;
+    if (!todayResults.matches.length && todayResults.failedResults.length) {
+      throw todayResults.failedResults[0].reason;
     }
 
-    if (failedResults.length) {
+    if (todayResults.failedResults.length) {
       console.warn(
-        `Live fixtures loaded with partial results. ${failedResults.length} league request(s) failed.`,
+        `Live fixtures loaded with partial results. ${todayResults.failedResults.length} league request(s) failed.`,
       );
     }
 
-    return successfulResults.flatMap(({ result }) => (result.response ?? []).map(mapFixture));
+    if (todayResults.matches.length) {
+      return todayResults.matches;
+    }
+
+    const upcomingResults = await fetchFixturesByLeague({
+      next: 3,
+      season: apiConfig.defaultSeason,
+      timezone: apiConfig.defaultTimezone,
+    });
+
+    lastTodayMatchesDiagnostics = upcomingResults.diagnostics;
+    lastTodayMatchesMode = 'upcoming';
+
+    if (!upcomingResults.matches.length && upcomingResults.failedResults.length) {
+      throw upcomingResults.failedResults[0].reason;
+    }
+
+    if (upcomingResults.failedResults.length) {
+      console.warn(
+        `Upcoming live fixtures loaded with partial results. ${upcomingResults.failedResults.length} league request(s) failed.`,
+      );
+    }
+
+    return upcomingResults.matches;
   },
   async getMatchDetails(matchId: number) {
     const [fixtureResult, statsResult, eventsResult] = await Promise.all([
@@ -122,6 +118,59 @@ export const liveFootballApi: FootballApi = {
   },
 };
 
+async function fetchFixturesByLeague(params: {
+  date?: string;
+  next?: number;
+  season: number;
+  timezone: string;
+}) {
+  const requests = DEFAULT_HOME_LEAGUES.map(async (league) => {
+    const result = await apiGet<ApiResponse<any[]>>('/fixtures', {
+      league,
+      season: params.season,
+      timezone: params.timezone,
+      date: params.date,
+      next: params.next,
+    });
+
+    return {
+      league,
+      result,
+    };
+  });
+
+  const settledResults = await Promise.allSettled(requests);
+  const successfulResults = settledResults.filter(isFulfilled).map((result) => result.value);
+  const failedResults = settledResults.filter(isRejected);
+
+  const diagnostics = settledResults
+    .map((result, index) => {
+      const leagueId = DEFAULT_HOME_LEAGUES[index] ?? -1;
+
+      if (result.status === 'fulfilled') {
+        return {
+          leagueId,
+          status: 'success' as const,
+          matchCount: result.value.result.response?.length ?? 0,
+        };
+      }
+
+      return {
+        leagueId,
+        status: 'error' as const,
+        matchCount: 0,
+        message: getDiagnosticMessage(result.reason),
+      };
+    })
+    .sort((a, b) => a.leagueId - b.leagueId);
+
+  return {
+    diagnostics,
+    failedResults,
+    matches: successfulResults.flatMap(({ result }) => (result.response ?? []).map(mapFixture)),
+  };
+}
+
 function isFulfilled<T>(
   result: PromiseSettledResult<T>,
 ): result is PromiseFulfilledResult<T> {
@@ -148,6 +197,10 @@ export function getFootballDataProvider(): FootballDataProvider {
 
 export function getLastTodayMatchesDiagnostics(): LeagueFetchDiagnostic[] {
   return lastTodayMatchesDiagnostics.map((item) => ({ ...item }));
+}
+
+export function getLastTodayMatchesMode(): TodayMatchesMode {
+  return lastTodayMatchesMode;
 }
 
 export function getFootballApi(): FootballApi {
@@ -215,4 +268,20 @@ function formatTime(timestampSeconds?: number): string {
   if (!timestampSeconds) return '--:--';
   const date = new Date(timestampSeconds * 1000);
   return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+}
+
+function formatDateInTimezone(timezone: string) {
+  const formatter = new Intl.DateTimeFormat('en-CA', {
+    timeZone: timezone,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  });
+
+  const parts = formatter.formatToParts(new Date());
+  const year = parts.find((part) => part.type === 'year')?.value ?? '1970';
+  const month = parts.find((part) => part.type === 'month')?.value ?? '01';
+  const day = parts.find((part) => part.type === 'day')?.value ?? '01';
+
+  return `${year}-${month}-${day}`;
 }

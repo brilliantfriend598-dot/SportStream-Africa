@@ -1,6 +1,11 @@
 import { useCallback, useEffect, useState } from 'react';
 import { ApiClientError } from '@/src/lib/api/client';
-import { getFootballDataProvider, getLastTodayMatchesDiagnostics, getTodayMatches } from '@/src/services/footballApi';
+import {
+  getFootballDataProvider,
+  getLastTodayMatchesDiagnostics,
+  getLastTodayMatchesMode,
+  getTodayMatches,
+} from '@/src/services/footballApi';
 import { resolveFallbackNotice, resolveListFetchState } from '@/src/services/footballFallback';
 import { mockFootballApi } from '@/src/services/mockFootballApi';
 import type { LeagueFetchDiagnostic, Match } from '@/src/services/footballTypes';
@@ -31,6 +36,7 @@ export function useTodayMatches(date?: string) {
       } else {
         const nextState = resolveListFetchState(provider, true, null, null);
         setData(result);
+        setNotice(getLastTodayMatchesMode() === 'upcoming' ? getUpcomingStateMessage() : null);
         setSource(nextState.source as 'live' | 'sample');
       }
     } catch (err) {
@@ -73,4 +79,8 @@ function getFriendlyMessage(error: unknown, subject: string) {
 function getEmptyStateMessage(date?: string) {
   const label = date ?? 'today';
   return `The live API returned no fixtures for ${label}. Showing sample data instead.`;
+}
+
+function getUpcomingStateMessage() {
+  return 'No fixtures were returned for today. Showing the next scheduled live fixtures instead.';
 }
