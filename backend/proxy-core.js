@@ -125,7 +125,12 @@ function handleProxyRequest(req, res, options = {}) {
     return;
   }
 
-  const targetUrl = new URL(requestUrl.pathname + requestUrl.search, config.upstreamUrl);
+  const forwardedSearch = new URLSearchParams(requestUrl.searchParams);
+  forwardedSearch.delete('path');
+
+  const targetUrl = new URL(requestUrl.pathname, config.upstreamUrl);
+  const nextSearch = forwardedSearch.toString();
+  targetUrl.search = nextSearch ? `?${nextSearch}` : '';
   const transport = targetUrl.protocol === 'https:' ? https : http;
 
   const proxyRequest = transport.request(
