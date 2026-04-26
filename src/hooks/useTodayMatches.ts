@@ -26,10 +26,14 @@ export function useTodayMatches(date?: string) {
       setError(null);
       setNotice(null);
       const result = await getTodayMatches(date);
-      setDiagnostics(getLastTodayMatchesDiagnostics());
+      const nextDiagnostics = getLastTodayMatchesDiagnostics();
+      setDiagnostics(nextDiagnostics);
       if (result.length === 0) {
         const fallbackMatches = await mockFootballApi.getTodayMatches(date);
-        const nextState = resolveListFetchState(provider, false, getEmptyStateMessage(date), null);
+        const emptyStateMessage = hasSuccessfulLiveConnectivity(nextDiagnostics)
+          ? getConnectedEmptyStateMessage(date)
+          : getEmptyStateMessage(date);
+        const nextState = resolveListFetchState(provider, false, emptyStateMessage, null);
         setData(fallbackMatches);
         setNotice(nextState.notice);
         setSource(nextState.source as 'live' | 'sample');
@@ -81,6 +85,15 @@ function getEmptyStateMessage(date?: string) {
   return `The live API returned no fixtures for ${label}. Showing sample data instead.`;
 }
 
+function getConnectedEmptyStateMessage(date?: string) {
+  const label = date ?? 'today';
+  return `Live API connected successfully, but no fixtures were returned for ${label}. Showing sample data instead.`;
+}
+
 function getUpcomingStateMessage() {
   return 'No fixtures were returned for today. Showing the next scheduled live fixtures instead.';
+}
+
+function hasSuccessfulLiveConnectivity(diagnostics: LeagueFetchDiagnostic[]) {
+  return diagnostics.some((item) => item.status === 'success');
 }
