@@ -5,23 +5,23 @@
   "installCommand": "npm install --legacy-peer-deps",
   "rewrites": [
     {
-      "source": "/health",
+      "source": "/api/football/health",
       "destination": "/api/index.js"
     },
     {
-      "source": "/fixtures",
+      "source": "/api/football/fixtures",
       "destination": "/api/index.js"
     },
     {
-      "source": "/fixtures/statistics",
+      "source": "/api/football/fixtures/statistics",
       "destination": "/api/index.js"
     },
     {
-      "source": "/fixtures/events",
+      "source": "/api/football/fixtures/events",
       "destination": "/api/index.js"
     },
     {
-      "source": "/standings",
+      "source": "/api/football/standings",
       "destination": "/api/index.js"
     }
   ]

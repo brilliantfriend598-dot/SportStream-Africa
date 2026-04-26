@@ -5,6 +5,7 @@ const os = require('os');
 const path = require('path');
 const { URL } = require('url');
 
+const hostedPrefix = '/api/football';
 const allowedPrefixes = ['/fixtures', '/fixtures/statistics', '/fixtures/events', '/standings'];
 
 function loadEnvFile(filePath) {
@@ -109,8 +110,9 @@ function handleProxyRequest(req, res, options = {}) {
 
   const requestUrl = new URL(req.url, `http://${req.headers.host || 'localhost'}`);
   requestUrl.searchParams.delete('path');
+  const normalizedPathname = normalizeIncomingPath(requestUrl.pathname);
 
-  if (requestUrl.pathname === '/health') {
+  if (normalizedPathname === '/health') {
     sendJson(res, 200, {
       ok: true,
       upstream: config.upstreamUrl.origin,
@@ -120,7 +122,7 @@ function handleProxyRequest(req, res, options = {}) {
     return;
   }
 
-  if (!allowedPrefixes.some((prefix) => requestUrl.pathname.startsWith(prefix))) {
+  if (!allowedPrefixes.some((prefix) => normalizedPathname.startsWith(prefix))) {
     sendJson(res, 404, { error: 'Unsupported endpoint' });
     return;
   }
@@ -128,7 +130,7 @@ function handleProxyRequest(req, res, options = {}) {
   const forwardedSearch = new URLSearchParams(requestUrl.searchParams);
   forwardedSearch.delete('path');
 
-  const targetUrl = new URL(requestUrl.pathname, config.upstreamUrl);
+  const targetUrl = new URL(normalizedPathname, config.upstreamUrl);
   const nextSearch = forwardedSearch.toString();
   targetUrl.search = nextSearch ? `?${nextSearch}` : '';
   const transport = targetUrl.protocol === 'https:' ? https : http;
@@ -160,6 +162,15 @@ function handleProxyRequest(req, res, options = {}) {
   });
 
   proxyRequest.end();
+}
+
+function normalizeIncomingPath(pathname) {
+  if (pathname.startsWith(hostedPrefix)) {
+    const stripped = pathname.slice(hostedPrefix.length);
+    return stripped || '/';
+  }
+
+  return pathname;
 }
 
 function createLocalServer() {

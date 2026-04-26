@@ -20,6 +20,7 @@ This is an Expo Router starter for the SportStream Africa mobile app.
 6. If you are using the local proxy, run `npm run proxy` in a second terminal.
 7. Start the app with `npx expo start`.
 8. For physical phone testing, set `EXPO_PUBLIC_API_PROXY_URL` to the LAN URL printed by the proxy, not `localhost`.
+9. For hosted Vercel proxy testing, use the prefixed hosted URL, for example `https://your-project.vercel.app/api/football`.
 
 Once the app is running, open the new `Testing` shortcut from Home to confirm build mode, auth mode, and data-source health before sharing the build with testers.
 
@@ -98,7 +99,7 @@ Recommended deployment path:
 `FOOTBALL_API_BASE_URL=https://v3.football.api-sports.io`
 `FOOTBALL_API_KEY=your-real-server-side-key`
 4. Deploy to production with `vercel --prod`.
-5. Set `EXPO_PUBLIC_API_PROXY_URL=https://your-project.vercel.app`.
+5. Set `EXPO_PUBLIC_API_PROXY_URL=https://your-project.vercel.app/api/football`.
 6. Rebuild the app with the `preview` profile so the APK points at the hosted backend.
 
 The hosted proxy exposes the same endpoints as local development, including `/health`.

@@ -48,7 +48,7 @@ If you want the APK to work away from your local Wi-Fi:
 
 1. Deploy the included serverless proxy with Vercel.
 2. Set `FOOTBALL_API_KEY` and `FOOTBALL_API_BASE_URL` as Vercel environment variables.
-3. Change `.env` so `EXPO_PUBLIC_API_PROXY_URL` points at your hosted URL.
+3. Change `.env` so `EXPO_PUBLIC_API_PROXY_URL` points at your hosted URL with the API prefix, such as `https://your-project.vercel.app/api/football`.
 4. Rebuild with `npx eas build --platform android --profile preview`.
 
 Use [HOSTED_BACKEND_SETUP.md](C:/Users/Botsh/Downloads/sportstream-africa-expo-starter/sportstream-africa-expo-starter/HOSTED_BACKEND_SETUP.md) and [.env.hosted.example](C:/Users/Botsh/Downloads/sportstream-africa-expo-starter/sportstream-africa-expo-starter/.env.hosted.example) as the deployment template.
