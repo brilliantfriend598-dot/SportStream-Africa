@@ -1,6 +1,11 @@
 import { useCallback, useEffect, useState } from 'react';
 import { ApiClientError } from '@/src/lib/api/client';
-import { getFootballDataProvider, getStandings } from '@/src/services/footballApi';
+import { apiConfig } from '@/src/lib/api/config';
+import {
+  getFootballDataProvider,
+  getStandings,
+  getStandingsWithSeasonFallback,
+} from '@/src/services/footballApi';
 import { resolveFallbackNotice, resolveListFetchState } from '@/src/services/footballFallback';
 import { mockFootballApi } from '@/src/services/mockFootballApi';
 import type { Standing } from '@/src/services/footballTypes';
@@ -11,6 +16,7 @@ export function useStandings(leagueId?: number) {
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const [source, setSource] = useState<'live' | 'sample'>('sample');
+  const [seasonUsed, setSeasonUsed] = useState<number | null>(null);
 
   const refetch = useCallback(async () => {
     if (!leagueId) return;
@@ -19,13 +25,17 @@ export function useStandings(leagueId?: number) {
       setLoading(true);
       setError(null);
       setNotice(null);
-      const result = await getStandings(leagueId);
-      if (result.length === 0) {
+      const { standings, seasonUsed: resolvedSeason } =
+        provider === 'live'
+          ? await getStandingsWithSeasonFallback(leagueId)
+          : { standings: await getStandings(leagueId), seasonUsed: apiConfig.defaultSeason };
+      setSeasonUsed(resolvedSeason);
+      if (standings.length === 0) {
         const fallback = await mockFootballApi.getStandings(leagueId);
         const nextState = resolveListFetchState(
           provider,
           false,
-          'Live standings are unavailable right now. Showing sample data instead.',
+          getEmptyStandingsMessage(resolvedSeason),
           null,
         );
         setData(fallback);
@@ -33,12 +43,18 @@ export function useStandings(leagueId?: number) {
         setSource(nextState.source as 'live' | 'sample');
       } else {
         const nextState = resolveListFetchState(provider, true, null, null);
-        setData(result);
+        setData(standings);
+        setNotice(
+          provider === 'live' && resolvedSeason !== apiConfig.defaultSeason
+            ? getSeasonFallbackMessage(resolvedSeason)
+            : null,
+        );
         setSource(nextState.source as 'live' | 'sample');
       }
     } catch (err) {
       const fallback = await mockFootballApi.getStandings(leagueId);
       setData(fallback);
+      setSeasonUsed(null);
       setNotice(resolveFallbackNotice(provider, getFriendlyMessage(err)));
       setError(null);
       setSource('sample');
@@ -51,7 +67,7 @@ export function useStandings(leagueId?: number) {
     refetch();
   }, [refetch]);
 
-  return { data, loading, error, notice, source, refetch };
+  return { data, loading, error, notice, source, seasonUsed, refetch };
 }
 
 function getFriendlyMessage(error: unknown) {
@@ -70,4 +86,12 @@ function getFriendlyMessage(error: unknown) {
   }
 
   return 'Live standings are unavailable right now. Showing sample data instead.';
+}
+
+function getSeasonFallbackMessage(season: number) {
+  return `Live standings connected successfully. Showing the latest available table from season ${season}.`;
+}
+
+function getEmptyStandingsMessage(season: number) {
+  return `Live standings connected successfully, but no table rows were returned for season ${season}. Showing sample data instead.`;
 }

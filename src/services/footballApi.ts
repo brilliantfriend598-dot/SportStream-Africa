@@ -1,4 +1,4 @@
-import { DEFAULT_HOME_LEAGUES } from '@/src/constants/leagues';
+import { DEFAULT_HOME_LEAGUES, LEAGUES } from '@/src/constants/leagues';
 import { apiGet } from '@/src/lib/api/client';
 import { apiConfig } from '@/src/lib/api/config';
 import { mockFootballApi } from './mockFootballApi';
@@ -70,7 +70,29 @@ export const liveFootballApi: FootballApi = {
       );
     }
 
-    return upcomingResults.matches;
+    if (upcomingResults.matches.length) {
+      return upcomingResults.matches;
+    }
+
+    const broadUpcomingResults = await fetchBroadUpcomingFixtures({
+      next: 20,
+      timezone: apiConfig.defaultTimezone,
+    });
+
+    lastTodayMatchesDiagnostics = broadUpcomingResults.diagnostics;
+    lastTodayMatchesMode = 'upcoming';
+
+    if (!broadUpcomingResults.matches.length && broadUpcomingResults.failedResults.length) {
+      throw broadUpcomingResults.failedResults[0].reason;
+    }
+
+    if (broadUpcomingResults.failedResults.length) {
+      console.warn(
+        `Broad upcoming live fixtures loaded with partial results. ${broadUpcomingResults.failedResults.length} request(s) failed.`,
+      );
+    }
+
+    return broadUpcomingResults.matches;
   },
   async getMatchDetails(matchId: number) {
     const [fixtureResult, statsResult, eventsResult] = await Promise.all([
@@ -171,6 +193,63 @@ async function fetchFixturesByLeague(params: {
   };
 }
 
+async function fetchBroadUpcomingFixtures(params: {
+  next: number;
+  timezone: string;
+}) {
+  const requests = [undefined, LEAGUES.PREMIER_LEAGUE, LEAGUES.PSL].map(async (league) => {
+    const result = await apiGet<ApiResponse<any[]>>('/fixtures', {
+      next: params.next,
+      timezone: params.timezone,
+      league,
+    });
+
+    return {
+      league: league ?? 0,
+      result,
+    };
+  });
+
+  const settledResults = await Promise.allSettled(requests);
+  const successfulResults = settledResults.filter(isFulfilled).map((result) => result.value);
+  const failedResults = settledResults.filter(isRejected);
+
+  const byId = new Map<number, Match>();
+  successfulResults
+    .flatMap(({ result }) => (result.response ?? []).map(mapFixture))
+    .forEach((match) => {
+      if (!byId.has(match.id)) {
+        byId.set(match.id, match);
+      }
+    });
+
+  const diagnostics = settledResults.map((result, index) => {
+    const requestedLeague = [0, LEAGUES.PREMIER_LEAGUE, LEAGUES.PSL][index] ?? 0;
+
+    if (result.status === 'fulfilled') {
+      return {
+        leagueId: requestedLeague,
+        status: 'success' as const,
+        matchCount: result.value.result.response?.length ?? 0,
+        message: requestedLeague === 0 ? 'Global upcoming fixtures query' : undefined,
+      };
+    }
+
+    return {
+      leagueId: requestedLeague,
+      status: 'error' as const,
+      matchCount: 0,
+      message: getDiagnosticMessage(result.reason),
+    };
+  });
+
+  return {
+    diagnostics,
+    failedResults,
+    matches: Array.from(byId.values()).slice(0, 12),
+  };
+}
+
 function isFulfilled<T>(
   result: PromiseSettledResult<T>,
 ): result is PromiseFulfilledResult<T> {
@@ -217,6 +296,53 @@ export async function getMatchDetails(matchId: number): Promise<MatchDetails> {
 
 export async function getStandings(leagueId: number): Promise<Standing[]> {
   return getFootballApi().getStandings(leagueId);
+}
+
+export async function getStandingsWithSeasonFallback(leagueId: number): Promise<{
+  standings: Standing[];
+  seasonUsed: number;
+}> {
+  const seasonsToTry = [apiConfig.defaultSeason, apiConfig.defaultSeason - 1].filter(
+    (season, index, values) => season > 0 && values.indexOf(season) === index,
+  );
+
+  let lastError: unknown = null;
+
+  for (const season of seasonsToTry) {
+    try {
+      const result = await apiGet<ApiResponse<any[]>>('/standings', {
+        league: leagueId,
+        season,
+      });
+
+      const rows = result.response?.[0]?.league?.standings?.[0] ?? [];
+      if (rows.length) {
+        return {
+          standings: rows.map((row: any) => ({
+            rank: row.rank,
+            team: row.team.name,
+            played: row.all.played,
+            won: row.all.win,
+            drawn: row.all.draw,
+            lost: row.all.lose,
+            points: row.points,
+          })),
+          seasonUsed: season,
+        };
+      }
+    } catch (error) {
+      lastError = error;
+    }
+  }
+
+  if (lastError) {
+    throw lastError;
+  }
+
+  return {
+    standings: [],
+    seasonUsed: apiConfig.defaultSeason,
+  };
 }
 
 function mapFixture(item: any): Match {
