@@ -22,19 +22,32 @@ type Props = {
 export function MatchCard({ match }: Props) {
   const statusColor =
     match.status === 'LIVE' ? theme.colors.gold : match.status === 'FT' ? '#C4C4C4' : '#8BE4BF';
+  const statusAccent =
+    match.status === 'LIVE' ? theme.colors.coral : match.status === 'FT' ? '#5F686B' : theme.colors.greenSoft;
 
   return (
     <Pressable
       onPress={() => router.push(`/match/${match.id}`)}
       style={{
         backgroundColor: theme.colors.panel,
-        borderColor: theme.colors.border,
+        borderColor: theme.colors.borderStrong,
         borderWidth: 1,
         borderRadius: theme.radius.xl,
-        padding: 16,
-        marginBottom: 12,
+        padding: 18,
+        marginBottom: 14,
+        overflow: 'hidden',
       }}
     >
+      <View
+        style={{
+          position: 'absolute',
+          top: 0,
+          bottom: 0,
+          left: 0,
+          width: 4,
+          backgroundColor: statusAccent,
+        }}
+      />
       <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 12 }}>
         <Text style={{ color: theme.colors.muted, fontSize: 12, letterSpacing: 1, textTransform: 'uppercase' }}>
           {match.league}
@@ -44,12 +57,21 @@ export function MatchCard({ match }: Props) {
 
       <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
         <View style={{ flex: 1 }}>
-          <Text style={{ color: theme.colors.text, fontSize: 18, fontWeight: '700' }}>{match.home}</Text>
-          <Text style={{ color: theme.colors.text, fontSize: 18, fontWeight: '700', marginTop: 10 }}>{match.away}</Text>
+          <Text style={{ color: theme.colors.text, fontSize: 18, fontWeight: '800' }}>{match.home}</Text>
+          <Text style={{ color: theme.colors.text, fontSize: 18, fontWeight: '800', marginTop: 10 }}>{match.away}</Text>
         </View>
 
-        <View style={{ alignItems: 'center' }}>
-          <Text style={{ color: theme.colors.text, fontSize: 22, fontWeight: '800' }}>{match.score}</Text>
+        <View
+          style={{
+            alignItems: 'center',
+            minWidth: 84,
+            backgroundColor: theme.colors.bgElevated,
+            borderRadius: 18,
+            paddingHorizontal: 14,
+            paddingVertical: 10,
+          }}
+        >
+          <Text style={{ color: theme.colors.text, fontSize: 22, fontWeight: '900' }}>{match.score}</Text>
           <Text style={{ color: theme.colors.muted, fontSize: 12, marginTop: 4 }}>{match.time}</Text>
         </View>
       </View>

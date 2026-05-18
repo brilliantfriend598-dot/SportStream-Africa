@@ -8,11 +8,20 @@ export default function TabsLayout() {
       screenOptions={{
         headerShown: false,
         tabBarStyle: {
-          backgroundColor: theme.colors.bg,
-          borderTopColor: theme.colors.border,
+          backgroundColor: theme.colors.bgElevated,
+          borderTopColor: theme.colors.borderStrong,
+          borderTopWidth: 1,
+          height: 72,
+          paddingTop: 8,
+          paddingBottom: 10,
         },
         tabBarActiveTintColor: theme.colors.gold,
         tabBarInactiveTintColor: theme.colors.muted,
+        tabBarLabelStyle: {
+          fontSize: 11,
+          fontWeight: '700',
+          letterSpacing: 0.2,
+        },
       }}
     >
       <Tabs.Screen

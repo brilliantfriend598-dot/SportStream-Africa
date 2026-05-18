@@ -1,4 +1,5 @@
 import { RefreshControl, ScrollView, Text, View } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { LEAGUES } from '../../src/constants/leagues';
 import { useStandings } from '../../src/hooks/useStandings';
 import { DataSourceBadge } from '../../components/DataSourceBadge';
@@ -14,7 +15,7 @@ export default function StandingsScreen() {
   return (
     <ScrollView
       style={{ flex: 1, backgroundColor: theme.colors.bg }}
-      contentContainerStyle={{ padding: 16, paddingTop: 20, paddingBottom: 100 }}
+      contentContainerStyle={{ padding: 16, paddingTop: 20, paddingBottom: 120 }}
       showsVerticalScrollIndicator={false}
       refreshControl={
         <RefreshControl
@@ -27,10 +28,27 @@ export default function StandingsScreen() {
         />
       }
     >
-      <Text style={{ color: theme.colors.text, fontSize: 28, fontWeight: '800' }}>Standings</Text>
-      <Text style={{ color: theme.colors.muted, fontSize: 14, marginTop: 8 }}>
-        Track the latest table movement across key competitions.
-      </Text>
+      <LinearGradient
+        colors={[theme.colors.bgElevated, theme.colors.panel, theme.colors.panelWarm]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={{
+          borderRadius: 28,
+          padding: 20,
+          borderWidth: 1,
+          borderColor: theme.colors.borderStrong,
+        }}
+      >
+        <Text style={{ color: theme.colors.gold, fontSize: 11, fontWeight: '700', letterSpacing: 2, textTransform: 'uppercase' }}>
+          Standings
+        </Text>
+        <Text style={{ color: theme.colors.text, fontSize: 28, fontWeight: '900', marginTop: 8 }}>
+          Table control
+        </Text>
+        <Text style={{ color: theme.colors.mutedSoft, fontSize: 14, lineHeight: 20, marginTop: 10 }}>
+          Track the latest table movement, form pressure, and points race across key competitions.
+        </Text>
+      </LinearGradient>
 
       <StandingsSection
         title="PSL Table"
@@ -96,10 +114,10 @@ function StandingsSection({ title, subtitle, data, source, notice, loading }: St
       <View
         style={{
           backgroundColor: theme.colors.panel,
-          borderColor: theme.colors.border,
+          borderColor: theme.colors.borderStrong,
           borderWidth: 1,
-          borderRadius: 24,
-          padding: 16,
+          borderRadius: 26,
+          padding: 18,
           gap: 12,
         }}
       >
@@ -124,10 +142,10 @@ function StandingsSection({ title, subtitle, data, source, notice, loading }: St
                 paddingTop: 12,
               }}
             >
-              <Text style={{ color: theme.colors.gold, fontWeight: '700', width: 34 }}>{row.rank}</Text>
+              <Text style={{ color: theme.colors.gold, fontWeight: '800', width: 34 }}>{row.rank}</Text>
               <Text style={{ color: theme.colors.text, flex: 1 }}>{row.team}</Text>
               <Text style={{ color: theme.colors.muted, width: 30, textAlign: 'center' }}>{row.played}</Text>
-              <Text style={{ color: theme.colors.text, fontWeight: '700', width: 38, textAlign: 'right' }}>
+              <Text style={{ color: theme.colors.text, fontWeight: '800', width: 38, textAlign: 'right' }}>
                 {row.points}
               </Text>
             </View>

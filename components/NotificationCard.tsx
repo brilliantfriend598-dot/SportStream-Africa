@@ -18,7 +18,7 @@ export function NotificationCard({ item }: Props) {
     <View
       style={{
         backgroundColor: theme.colors.panel,
-        borderColor: item.unread ? theme.colors.gold : theme.colors.border,
+        borderColor: item.unread ? theme.colors.gold : theme.colors.borderStrong,
         borderWidth: 1,
         borderRadius: theme.radius.xl,
         padding: 16,
@@ -29,10 +29,10 @@ export function NotificationCard({ item }: Props) {
     >
       <View
         style={{
-          width: 44,
-          height: 44,
+          width: 46,
+          height: 46,
           borderRadius: 16,
-          backgroundColor: item.unread ? '#1A1607' : '#1B1B1B',
+          backgroundColor: item.unread ? '#1A1607' : theme.colors.bgElevated,
           alignItems: 'center',
           justifyContent: 'center',
         }}
@@ -42,7 +42,7 @@ export function NotificationCard({ item }: Props) {
 
       <View style={{ flex: 1 }}>
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', gap: 12, alignItems: 'center' }}>
-          <Text style={{ color: theme.colors.text, fontSize: 15, fontWeight: '700', flex: 1 }}>{item.title}</Text>
+          <Text style={{ color: theme.colors.text, fontSize: 15, fontWeight: '800', flex: 1 }}>{item.title}</Text>
           <Text style={{ color: theme.colors.muted, fontSize: 12 }}>{item.time}</Text>
         </View>
         <Text style={{ color: theme.colors.muted, fontSize: 13, lineHeight: 18, marginTop: 6 }}>{item.message}</Text>
