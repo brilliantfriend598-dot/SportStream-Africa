@@ -12,15 +12,15 @@ export function DataSourceBadge({ source }: Props) {
     <View
       style={{
         alignSelf: 'flex-start',
-        backgroundColor: isLive ? '#0E2E22' : '#1A1607',
-        borderColor: isLive ? '#1E8E5A' : theme.colors.gold,
+        backgroundColor: isLive ? '#102B22' : '#1A1607',
+        borderColor: isLive ? '#236E4E' : theme.colors.gold,
         borderWidth: 1,
         borderRadius: 999,
-        paddingHorizontal: 10,
-        paddingVertical: 5,
+        paddingHorizontal: 11,
+        paddingVertical: 6,
       }}
     >
-      <Text style={{ color: isLive ? '#8BE4BF' : theme.colors.gold, fontSize: 12, fontWeight: '700' }}>
+      <Text style={{ color: isLive ? '#8BE4BF' : theme.colors.gold, fontSize: 12, fontWeight: '800', letterSpacing: 0.2 }}>
         {isLive ? 'Live API' : 'Sample Data'}
       </Text>
     </View>

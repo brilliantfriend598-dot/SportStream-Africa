@@ -10,16 +10,16 @@ export function BadgePill({ label, color = theme.colors.gold }: Props) {
   return (
     <View
       style={{
-        backgroundColor: '#1B1B1B',
+        backgroundColor: theme.colors.bgElevated,
         borderWidth: 1,
-        borderColor: theme.colors.border,
+        borderColor: theme.colors.borderStrong,
         borderRadius: 999,
         paddingHorizontal: 10,
         paddingVertical: 5,
         alignSelf: 'flex-start',
       }}
     >
-      <Text style={{ color, fontSize: 12, fontWeight: '700' }}>{label}</Text>
+      <Text style={{ color, fontSize: 12, fontWeight: '800', letterSpacing: 0.2 }}>{label}</Text>
     </View>
   );
 }

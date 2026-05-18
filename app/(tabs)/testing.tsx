@@ -1,6 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import Constants from 'expo-constants';
 import * as Linking from 'expo-linking';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { Platform, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { DataSourceBadge } from '../../components/DataSourceBadge';
@@ -38,36 +39,43 @@ export default function TestingScreen() {
   return (
     <ScrollView
       style={{ flex: 1, backgroundColor: theme.colors.bg }}
-      contentContainerStyle={{ padding: 16, paddingTop: 20, paddingBottom: 100 }}
+      contentContainerStyle={{ padding: 16, paddingTop: 20, paddingBottom: 120 }}
       showsVerticalScrollIndicator={false}
     >
-      <Text style={{ color: theme.colors.gold, fontSize: 11, fontWeight: '700', letterSpacing: 2, textTransform: 'uppercase' }}>
-        Real-World Testing
-      </Text>
-      <Text style={{ color: theme.colors.text, fontSize: 28, fontWeight: '800', marginTop: 6 }}>
-        Testing Hub
-      </Text>
-      <Text style={{ color: theme.colors.muted, fontSize: 14, marginTop: 8, lineHeight: 20 }}>
-        One place to confirm what this build is using before you hand it to a real tester.
-      </Text>
+      <LinearGradient
+        colors={[theme.colors.panel, theme.colors.bgElevated, theme.colors.panelWarm]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={{
+          borderRadius: 28,
+          padding: 20,
+          borderWidth: 1,
+          borderColor: theme.colors.borderStrong,
+        }}
+      >
+        <Text style={{ color: theme.colors.gold, fontSize: 11, fontWeight: '700', letterSpacing: 2, textTransform: 'uppercase' }}>
+          Real-World Testing
+        </Text>
+        <Text style={{ color: theme.colors.text, fontSize: 28, fontWeight: '900', marginTop: 8 }}>
+          Testing Hub
+        </Text>
+        <Text style={{ color: theme.colors.mutedSoft, fontSize: 14, marginTop: 10, lineHeight: 20 }}>
+          One place to confirm what this build is using before you hand it to a real tester.
+        </Text>
+      </LinearGradient>
 
       <View
         style={{
           marginTop: 18,
           backgroundColor: theme.colors.panel,
-          borderColor: theme.colors.border,
+          borderColor: theme.colors.borderStrong,
           borderWidth: 1,
           borderRadius: 24,
           padding: 18,
           gap: 16,
         }}
       >
-        <StatusRow
-          icon="phone-portrait"
-          label="App"
-          value={`${APP_NAME} v${APP_VERSION}`}
-          detail={`${Platform.OS} build`}
-        />
+        <StatusRow icon="phone-portrait" label="App" value={`${APP_NAME} v${APP_VERSION}`} detail={`${Platform.OS} build`} />
         <StatusRow
           icon="server"
           label="Football provider"
@@ -88,10 +96,14 @@ export default function TestingScreen() {
         />
       </View>
 
-      <SectionHeader title="Live Data Health" action="Refresh checks" onPress={() => {
-        refetchMatches();
-        refetchStandings();
-      }} />
+      <SectionHeader
+        title="Live Data Health"
+        action="Refresh checks"
+        onPress={() => {
+          refetchMatches();
+          refetchStandings();
+        }}
+      />
 
       <View style={{ gap: 12 }}>
         <HealthCard
@@ -113,7 +125,7 @@ export default function TestingScreen() {
       <View
         style={{
           backgroundColor: theme.colors.panel,
-          borderColor: theme.colors.border,
+          borderColor: theme.colors.borderStrong,
           borderWidth: 1,
           borderRadius: 24,
           padding: 18,
@@ -131,7 +143,7 @@ export default function TestingScreen() {
       <View
         style={{
           backgroundColor: theme.colors.panelSoft,
-          borderColor: theme.colors.border,
+          borderColor: theme.colors.borderStrong,
           borderWidth: 1,
           borderRadius: 24,
           padding: 18,
@@ -195,10 +207,10 @@ function StatusRow({
     <View style={{ flexDirection: 'row', gap: 12, alignItems: 'center' }}>
       <View
         style={{
-          width: 42,
-          height: 42,
+          width: 44,
+          height: 44,
           borderRadius: 16,
-          backgroundColor: '#1B1B1B',
+          backgroundColor: theme.colors.bgElevated,
           alignItems: 'center',
           justifyContent: 'center',
         }}
@@ -207,7 +219,7 @@ function StatusRow({
       </View>
       <View style={{ flex: 1 }}>
         <Text style={{ color: theme.colors.muted, fontSize: 12 }}>{label}</Text>
-        <Text style={{ color: theme.colors.text, fontSize: 15, fontWeight: '700', marginTop: 2 }}>{value}</Text>
+        <Text style={{ color: theme.colors.text, fontSize: 15, fontWeight: '800', marginTop: 2 }}>{value}</Text>
         <Text style={{ color: theme.colors.muted, fontSize: 12, marginTop: 4 }}>{detail}</Text>
       </View>
     </View>
@@ -236,14 +248,14 @@ function HealthCard({
     <View
       style={{
         backgroundColor: theme.colors.panel,
-        borderColor: theme.colors.border,
+        borderColor: theme.colors.borderStrong,
         borderWidth: 1,
         borderRadius: 24,
         padding: 18,
       }}
     >
       <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
-        <Text style={{ color: theme.colors.text, fontSize: 16, fontWeight: '700', flex: 1 }}>{title}</Text>
+        <Text style={{ color: theme.colors.text, fontSize: 16, fontWeight: '800', flex: 1 }}>{title}</Text>
         <DataSourceBadge source={source} />
       </View>
       <Text style={{ color: theme.colors.muted, fontSize: 13, marginTop: 12 }}>{summary}</Text>
@@ -317,26 +329,26 @@ function ActionCard({
       style={{
         width: '48%',
         backgroundColor: theme.colors.panel,
-        borderColor: theme.colors.border,
+        borderColor: theme.colors.borderStrong,
         borderWidth: 1,
-        borderRadius: 20,
+        borderRadius: 22,
         padding: 16,
         gap: 10,
       }}
     >
       <View
         style={{
-          width: 40,
-          height: 40,
-          borderRadius: 14,
-          backgroundColor: '#1B1B1B',
+          width: 42,
+          height: 42,
+          borderRadius: 16,
+          backgroundColor: theme.colors.bgElevated,
           alignItems: 'center',
           justifyContent: 'center',
         }}
       >
         <Ionicons name={icon} size={18} color={theme.colors.gold} />
       </View>
-      <Text style={{ color: theme.colors.text, fontSize: 15, fontWeight: '700' }}>{title}</Text>
+      <Text style={{ color: theme.colors.text, fontSize: 15, fontWeight: '800' }}>{title}</Text>
       <Text style={{ color: theme.colors.muted, fontSize: 12, lineHeight: 18 }}>{description}</Text>
       <Text style={{ color: theme.colors.gold, fontSize: 12, fontWeight: '700' }}>{actionLabel}</Text>
     </TouchableOpacity>
